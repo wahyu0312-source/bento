@@ -184,16 +184,26 @@ async function loadMenuForDate(dateStr) {
     if (!menu) {
       todayMenuDiv.textContent = 'メニュー未登録';
     } else {
+      const imgHtml = menu.imageUrl
+        ? `
+          <div class="w-full sm:w-40 h-32 flex-shrink-0">
+            <img src="${menu.imageUrl}"
+                 alt="${menu.name || ''}"
+                 class="w-full h-full object-cover rounded-xl border border-sky-100 shadow-sm" />
+          </div>
+        `
+        : '';
+
       todayMenuDiv.innerHTML = `
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="flex-1">
             <div class="font-semibold text-sky-900">${menu.name || '未設定'}</div>
             <div class="text-sm text-slate-500 mt-1">日付: ${menu.date}</div>
+            <div class="mt-2 text-sm text-slate-600">
+              価格: <span class="font-semibold text-orange-700">${formatJPY(menu.price || 0)}</span>
+            </div>
           </div>
-          <div class="text-right">
-            <div class="text-sm text-slate-500">価格</div>
-            <div class="text-lg font-semibold text-orange-700">${formatJPY(menu.price || 0)}</div>
-          </div>
+          ${imgHtml}
         </div>
       `;
     }
@@ -202,6 +212,7 @@ async function loadMenuForDate(dateStr) {
     todayMenuDiv.textContent = 'メニュー取得エラー';
   }
 }
+
 
 // ====== Submit order ======
 orderForm.addEventListener('submit', async (e) => {
