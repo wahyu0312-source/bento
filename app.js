@@ -115,11 +115,12 @@ const monthDayBody       = document.getElementById('month-day-body');
 const btnDownloadDay   = document.getElementById('btn-download-day');
 const btnDownloadWeek  = document.getElementById('btn-download-week');
 const btnDownloadMonth = document.getElementById('btn-download-month');
+const employeeSearchInput = document.getElementById('employee-search');
 
 // cache summary data for export
 let lastDaySummary = null;
 let lastMonthSummary = null;
-
+let allEmployees = [];
 // ====== Tabs ======
 function activateTab(name) {
   if (name === 'order') {
@@ -142,34 +143,60 @@ tabDashboard.addEventListener('click', () => activateTab('dashboard'));
 async function loadEmployees() {
   try {
     const data = await apiGet({ action: 'getEmployees' });
-    employeeSelect.innerHTML = '';
 
-    if (data.employees && data.employees.length > 0) {
-      data.employees.forEach(emp => {
-        // Bisa handle format lama (string) dan baru (object)
-        const name = typeof emp === 'string' ? emp : emp.name;
-        const dept = typeof emp === 'string'
-          ? ''
-          : (emp.dept || emp.department || '');
+    // Normalisasi: boleh string lama, boleh object baru
+    allEmployees = (data.employees || []).map(emp => {
+      if (typeof emp === 'string') {
+        return { name: emp, dept: '' };
+      }
+      return {
+        name: emp.name || '',
+        dept: emp.dept || emp.department || ''
+      };
+    }).filter(e => e.name);
 
-        const opt = document.createElement('option');
-        opt.value = name;
-        opt.textContent = dept ? `${name}（${dept}）` : name;
-        employeeSelect.appendChild(opt);
-      });
-    } else {
-      const opt = document.createElement('option');
-      opt.value = '';
-      opt.textContent = '社員マスタが未設定です';
-      employeeSelect.appendChild(opt);
-    }
+    renderEmployeeOptions('');
   } catch (err) {
     console.error(err);
+    employeeSelect.innerHTML = '';
     const opt = document.createElement('option');
     opt.value = '';
     opt.textContent = '社員リスト取得エラー';
     employeeSelect.appendChild(opt);
   }
+}
+function renderEmployeeOptions(filterText) {
+  const keyword = (filterText || '').toLowerCase();
+  employeeSelect.innerHTML = '';
+
+  const filtered = allEmployees.filter(e => {
+    if (!keyword) return true;
+    return (
+      e.name.toLowerCase().includes(keyword) ||
+      (e.dept && e.dept.toLowerCase().includes(keyword))
+    );
+  });
+
+  if (filtered.length === 0) {
+    const opt = document.createElement('option');
+    opt.value = '';
+    opt.textContent = '該当する社員が見つかりません';
+    employeeSelect.appendChild(opt);
+    return;
+  }
+
+  filtered.forEach(e => {
+    const opt = document.createElement('option');
+    opt.value = e.name; // backend tetap terima nama saja
+    opt.textContent = e.dept ? `${e.name}（${e.dept}）` : e.name;
+    employeeSelect.appendChild(opt);
+  });
+}
+if (employeeSearchInput) {
+  employeeSearchInput.addEventListener('input', () => {
+    const text = employeeSearchInput.value || '';
+    renderEmployeeOptions(text.trim());
+  });
 }
 
 
