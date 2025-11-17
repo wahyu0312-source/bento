@@ -117,10 +117,11 @@ const btnDownloadWeek  = document.getElementById('btn-download-week');
 const btnDownloadMonth = document.getElementById('btn-download-month');
 const employeeSearchInput = document.getElementById('employee-search');
 
-// cache summary data for export
+// ====== Global cache ======
 let lastDaySummary = null;
 let lastMonthSummary = null;
 let allEmployees = [];
+
 // ====== Tabs ======
 function activateTab(name) {
   if (name === 'order') {
@@ -140,9 +141,6 @@ tabOrder.addEventListener('click', () => activateTab('order'));
 tabDashboard.addEventListener('click', () => activateTab('dashboard'));
 
 // ====== Load employees ======
-// daftar karyawan disimpan global (untuk search, kalau mau)
-let allEmployees = [];
-
 async function loadEmployees() {
   try {
     const data = await apiGet({ action: 'getEmployees' });
@@ -168,35 +166,6 @@ async function loadEmployees() {
     opt.textContent = '社員リスト取得エラー';
     employeeSelect.appendChild(opt);
   }
-}
-function renderEmployeeOptions(filterText) {
-  const keyword = (filterText || '').toLowerCase();
-  employeeSelect.innerHTML = '';
-
-  const filtered = allEmployees.filter(e => {
-    if (!keyword) return true;
-    return (
-      e.name.toLowerCase().includes(keyword) ||
-      (e.dept && e.dept.toLowerCase().includes(keyword))
-    );
-  });
-
-  if (filtered.length === 0) {
-    const opt = document.createElement('option');
-    opt.value = '';
-    opt.textContent = '該当する社員が見つかりません';
-    employeeSelect.appendChild(opt);
-    return;
-  }
-
-  filtered.forEach(e => {
-    const opt = document.createElement('option');
-    opt.value = e.name;                          // ke backend tetap nama saja
-    opt.textContent = e.dept
-      ? `${e.name}（${e.dept}）`
-      : e.name;                                  // tampil: 山田（生産管理部）
-    employeeSelect.appendChild(opt);
-  });
 }
 
 function renderEmployeeOptions(filterText) {
@@ -226,13 +195,14 @@ function renderEmployeeOptions(filterText) {
     employeeSelect.appendChild(opt);
   });
 }
+
+// search box
 if (employeeSearchInput) {
   employeeSearchInput.addEventListener('input', () => {
     const text = employeeSearchInput.value || '';
     renderEmployeeOptions(text.trim());
   });
 }
-
 
 // ====== Menu per date ======
 async function loadMenuForDate(dateStr) {
@@ -274,7 +244,6 @@ async function loadMenuForDate(dateStr) {
   }
 }
 
-
 // ====== Submit order ======
 orderForm.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -299,7 +268,6 @@ orderForm.addEventListener('submit', async (e) => {
 
     if (res && res.success) {
       formMessage.textContent = '保存しました。';
-      // sinkronkan dashboard
       dashboardDateInput.value = dateStr;
       dashboardMonthInput.value = monthStrFromDateStr(dateStr);
       await Promise.all([
@@ -429,7 +397,7 @@ btnRefreshDashboard.addEventListener('click', async () => {
   ]);
 });
 
-// ====== Date change handlers (auto ganti menu & summary) ======
+// ====== Date change handlers ======
 orderDateInput.addEventListener('change', async () => {
   const dateStr = orderDateInput.value;
   if (!dateStr) return;
@@ -451,7 +419,7 @@ dashboardDateInput.addEventListener('change', async () => {
   }
 });
 
-// ====== Auto change when real date changes (cek tiap 1 menit) ======
+// ====== Auto change when real date changes ======
 let currentSystemDate = todayStr();
 setInterval(async () => {
   const now = todayStr();
@@ -501,7 +469,6 @@ btnDownloadWeek.addEventListener('click', () => {
   }
   const { start, end } = getWeekRange(baseDate);
 
-  // フィルタ: 月次のperDayから週の範囲だけ抜き出す
   const perDay = (lastMonthSummary.perDay || []).filter(d =>
     d.date >= start && d.date <= end
   );
@@ -527,7 +494,7 @@ btnDownloadWeek.addEventListener('click', () => {
 btnDownloadMonth.addEventListener('click', () => {
   if (!lastMonthSummary) {
     alert('まず月間集計を更新してください。');
-    return;
+  return;
   }
   const m = lastMonthSummary;
   const rows = [];
