@@ -145,10 +145,16 @@ async function loadEmployees() {
     employeeSelect.innerHTML = '';
 
     if (data.employees && data.employees.length > 0) {
-      data.employees.forEach(name => {
+      data.employees.forEach(emp => {
+        // Bisa handle format lama (string) dan baru (object)
+        const name = typeof emp === 'string' ? emp : emp.name;
+        const dept = typeof emp === 'string'
+          ? ''
+          : (emp.dept || emp.department || '');
+
         const opt = document.createElement('option');
         opt.value = name;
-        opt.textContent = name;
+        opt.textContent = dept ? `${name}（${dept}）` : name;
         employeeSelect.appendChild(opt);
       });
     } else {
@@ -165,6 +171,7 @@ async function loadEmployees() {
     employeeSelect.appendChild(opt);
   }
 }
+
 
 // ====== Menu per date ======
 async function loadMenuForDate(dateStr) {
