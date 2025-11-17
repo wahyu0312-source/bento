@@ -206,43 +206,73 @@ if (employeeSearchInput) {
 
 // ====== Menu per date ======
 async function loadMenuForDate(dateStr) {
-  todayMenuDiv.textContent = '読み込み中…';
-  todayDateLabel.textContent = `(${dateStr})`;
+  // todayMenuDiv / todayDateLabel bisa null kalau elemen HTML-nya dihapus,
+  // jadi kita cek dulu sebelum dipakai
+  if (todayMenuDiv) {
+    todayMenuDiv.textContent = '読み込み中…';
+  }
+  if (todayDateLabel) {
+    todayDateLabel.textContent = `(${dateStr})`;
+  }
 
   try {
     const data = await apiGet({ action: 'getMenu', date: dateStr });
     const menu = data.menu;
     if (!menu) {
-      todayMenuDiv.textContent = 'メニュー未登録';
+      if (todayMenuDiv) {
+        todayMenuDiv.textContent = 'メニュー未登録';
+      }
     } else {
       const imgHtml = menu.imageUrl
         ? `
-          <div class="w-full sm:w-40 h-32 flex-shrink-0">
+          <div class="w-32 sm:w-40 h-24 sm:h-28 rounded-2xl overflow-hidden border border-white/70 shadow-sm bg-white/80 flex-shrink-0">
             <img src="${menu.imageUrl}"
                  alt="${menu.name || ''}"
-                 class="w-full h-full object-cover rounded-xl border border-sky-100 shadow-sm" />
+                 class="w-full h-full object-cover" />
           </div>
         `
-        : '';
+        : `
+          <div class="w-32 sm:w-40 h-24 sm:h-28 rounded-2xl bg-slate-100/60 flex items-center justify-center text-[11px] text-slate-400 flex-shrink-0">
+            画像未登録
+          </div>
+        `;
 
-      todayMenuDiv.innerHTML = `
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div class="flex-1">
-            <div class="font-semibold text-sky-900">${menu.name || '未設定'}</div>
-            <div class="text-sm text-slate-500 mt-1">日付: ${menu.date}</div>
-            <div class="mt-2 text-sm text-slate-600">
-              価格: <span class="font-semibold text-orange-700">${formatJPY(menu.price || 0)}</span>
+      if (todayMenuDiv) {
+        todayMenuDiv.innerHTML = `
+          <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-sky-50 via-white to-orange-50 border border-sky-100 shadow-sm">
+            <div class="pointer-events-none absolute -right-10 -top-10 w-40 h-40 opacity-15">
+              <img src="./images/food-bg.png" alt="" class="w-full h-full object-contain">
+            </div>
+
+            <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6">
+              <div class="flex-1">
+                <p class="text-xs font-semibold tracking-wide text-sky-500">本日のメニュー</p>
+                <p class="mt-1 text-lg sm:text-xl font-semibold text-sky-900">
+                  ${menu.name || '未設定'}
+                </p>
+                <p class="mt-1 text-xs text-slate-500">日付: ${menu.date}</p>
+                <p class="mt-3 text-sm text-slate-700">
+                  価格：
+                  <span class="font-bold text-orange-600">${formatJPY(menu.price || 0)}</span>
+                </p>
+                <p class="mt-1 text-[11px] text-slate-400">
+                  社員向け日替わり弁当です。
+                </p>
+              </div>
+              ${imgHtml}
             </div>
           </div>
-          ${imgHtml}
-        </div>
-      `;
+        `;
+      }
     }
   } catch (err) {
     console.error(err);
-    todayMenuDiv.textContent = 'メニュー取得エラー';
+    if (todayMenuDiv) {
+      todayMenuDiv.textContent = 'メニュー取得エラー';
+    }
   }
 }
+
 
 // ====== Submit order ======
 orderForm.addEventListener('submit', async (e) => {
