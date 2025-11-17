@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>社員向け弁当注文システム</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="manifest" href="manifest.json" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-50">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+    <!-- Header -->
+    <header class="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between mb-6 sm:mb-8">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight">
+          社員向け弁当注文システム
+        </h1>
+        <p class="text-sm sm:text-base text-slate-300 mt-1">
+          日替わり弁当の注文・集計をシンプルに管理
+        </p>
+      </div>
+      <div class="flex items-center gap-2 text-xs sm:text-sm text-slate-300">
+        <span class="px-2 py-1 rounded-full bg-slate-800/70 border border-slate-600">
+          モバイル対応
+        </span>
+        <span class="px-2 py-1 rounded-full bg-slate-800/70 border border-slate-600">
+          PWAインストール可
+        </span>
+      </div>
+    </header>
+
+    <!-- Tabs -->
+    <div class="mb-4 sm:mb-6">
+      <div class="inline-flex rounded-xl bg-slate-800/70 p-1">
+        <button id="tab-order"
+          class="tab-btn px-3 sm:px-5 py-2 text-xs sm:text-sm rounded-lg font-medium bg-slate-900 text-white shadow-sm">
+          注文フォーム
+        </button>
+        <button id="tab-dashboard"
+          class="tab-btn px-3 sm:px-5 py-2 text-xs sm:text-sm rounded-lg font-medium text-slate-300 hover:text-white hover:bg-slate-700/70">
+          ダッシュボード
+        </button>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <main class="space-y-6 sm:space-y-8">
+
+      <!-- Order Section -->
+      <section id="order-section" class="space-y-4 sm:space-y-6">
+        <!-- Bento info -->
+        <div class="bg-slate-900/80 border border-slate-700 rounded-2xl p-4 sm:p-5 shadow-lg shadow-slate-900/40">
+          <h2 class="text-base sm:text-lg font-semibold mb-2 flex items-center gap-2">
+            <span>本日のメニュー</span>
+            <span id="today-date-label" class="text-xs sm:text-sm text-slate-400"></span>
+          </h2>
+          <div id="today-menu" class="text-sm sm:text-base text-slate-100">
+            読み込み中…
+          </div>
+        </div>
+
+        <!-- Form -->
+        <div class="bg-slate-900/80 border border-slate-700 rounded-2xl p-4 sm:p-5 shadow-lg shadow-slate-900/40">
+          <h2 class="text-base sm:text-lg font-semibold mb-4">
+            弁当注文フォーム
+          </h2>
+
+          <form id="order-form" class="space-y-4 sm:space-y-5">
+            <!-- Date -->
+            <div class="space-y-1">
+              <label class="block text-xs sm:text-sm text-slate-300">
+                日付（受け取り日）
+              </label>
+              <input
+                type="date"
+                id="order-date"
+                class="w-full rounded-xl bg-slate-800 border border-slate-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400"
+              />
+            </div>
+
+            <!-- Employee -->
+            <div class="space-y-1">
+              <label class="block text-xs sm:text-sm text-slate-300">
+                社員名
+              </label>
+              <select
+                id="employee-name"
+                class="w-full rounded-xl bg-slate-800 border border-slate-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400">
+              </select>
+              <p class="text-[11px] text-slate-400 mt-1">
+                社員マスタに登録されていない場合は別シートで追加してください。
+              </p>
+            </div>
+
+            <!-- Order / not order -->
+            <div class="space-y-1">
+              <span class="block text-xs sm:text-sm text-slate-300 mb-1">
+                弁当を注文しますか？
+              </span>
+              <div class="flex flex-col sm:flex-row gap-2">
+                <label
+                  class="flex-1 flex items-center gap-2 rounded-xl border border-slate-600 bg-slate-800 px-3 py-2 text-sm cursor-pointer hover:border-emerald-400">
+                  <input type="radio" name="order-status" value="order" class="text-emerald-400" checked />
+                  <span>注文する</span>
+                </label>
+                <label
+                  class="flex-1 flex items-center gap-2 rounded-xl border border-slate-600 bg-slate-800 px-3 py-2 text-sm cursor-pointer hover:border-rose-400">
+                  <input type="radio" name="order-status" value="noOrder" class="text-rose-400" />
+                  <span>注文しない</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex flex-col sm:flex-row gap-3 sm:items-center justify-between pt-2">
+              <button
+                type="submit"
+                class="inline-flex items-center justify-center rounded-xl bg-emerald-500 hover:bg-emerald-400 text-sm font-semibold px-4 py-2 shadow-md shadow-emerald-500/30">
+                送信する
+              </button>
+              <p id="form-message" class="text-xs sm:text-sm text-slate-300"></p>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- Dashboard Section -->
+      <section id="dashboard-section" class="hidden space-y-4 sm:space-y-6">
+        <!-- Filter -->
+        <div class="bg-slate-900/80 border border-slate-700 rounded-2xl p-4 sm:p-5 shadow-lg shadow-slate-900/40">
+          <div class="flex flex-col sm:flex-row gap-3 sm:items-end justify-between">
+            <div class="space-y-1">
+              <label class="block text-xs sm:text-sm text-slate-300">
+                集計対象日
+              </label>
+              <input
+                type="date"
+                id="dashboard-date"
+                class="w-full sm:w-auto rounded-xl bg-slate-800 border border-slate-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400"
+              />
+            </div>
+            <div class="space-y-1">
+              <label class="block text-xs sm:text-sm text-slate-300">
+                月間集計（yyyy-MM）
+              </label>
+              <input
+                type="month"
+                id="dashboard-month"
+                class="w-full sm:w-auto rounded-xl bg-slate-800 border border-slate-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400"
+              />
+            </div>
+            <button
+              id="btn-refresh-dashboard"
+              class="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-slate-700 hover:bg-slate-600 text-xs sm:text-sm font-semibold px-4 py-2">
+              更新
+            </button>
+          </div>
+        </div>
+
+        <!-- Today summary -->
+        <div
+          class="bg-slate-900/80 border border-slate-700 rounded-2xl p-4 sm:p-5 shadow-lg shadow-slate-900/40 space-y-3 sm:space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <h2 class="text-base sm:text-lg font-semibold">
+              本日の注文状況
+            </h2>
+            <span id="dashboard-date-label" class="text-xs sm:text-sm text-slate-300"></span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs sm:text-sm">
+            <div
+              class="rounded-xl bg-slate-800/80 border border-slate-700 px-3 py-2 sm:px-4 sm:py-3 flex flex-col gap-1">
+              <span class="text-slate-400">注文数</span>
+              <span id="day-total-count" class="text-lg sm:text-xl font-semibold"></span>
+            </div>
+            <div
+              class="rounded-xl bg-slate-800/80 border border-slate-700 px-3 py-2 sm:px-4 sm:py-3 flex flex-col gap-1">
+              <span class="text-slate-400">合計金額</span>
+              <span id="day-total-amount" class="text-lg sm:text-xl font-semibold"></span>
+            </div>
+          </div>
+
+          <div class="mt-2">
+            <h3 class="text-xs sm:text-sm text-slate-300 mb-2">社員別ステータス</h3>
+            <div class="overflow-x-auto text-xs sm:text-sm">
+              <table class="min-w-full border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-700 text-slate-300">
+                    <th class="text-left py-1 pr-4">社員名</th>
+                    <th class="text-left py-1 pr-4">ステータス</th>
+                    <th class="text-right py-1">小計</th>
+                  </tr>
+                </thead>
+                <tbody id="day-orders-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Monthly summary -->
+        <div
+          class="bg-slate-900/80 border border-slate-700 rounded-2xl p-4 sm:p-5 shadow-lg shadow-slate-900/40 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <h2 class="text-base sm:text-lg font-semibold">
+              月間集計
+            </h2>
+            <span id="dashboard-month-label" class="text-xs sm:text-sm text-slate-300"></span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs sm:text-sm">
+            <div
+              class="rounded-xl bg-slate-800/80 border border-slate-700 px-3 py-2 sm:px-4 sm:py-3 flex flex-col gap-1">
+              <span class="text-slate-400">注文数合計</span>
+              <span id="month-total-count" class="text-lg sm:text-xl font-semibold"></span>
+            </div>
+            <div
+              class="rounded-xl bg-slate-800/80 border border-slate-700 px-3 py-2 sm:px-4 sm:py-3 flex flex-col gap-1">
+              <span class="text-slate-400">金額合計</span>
+              <span id="month-total-amount" class="text-lg sm:text-xl font-semibold"></span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
+            <!-- per employee -->
+            <div>
+              <h3 class="text-xs sm:text-sm text-slate-300 mb-2">社員別集計</h3>
+              <div class="overflow-x-auto">
+                <table class="min-w-full border-collapse">
+                  <thead>
+                    <tr class="border-b border-slate-700 text-slate-300">
+                      <th class="text-left py-1 pr-4">社員名</th>
+                      <th class="text-right py-1 pr-4">注文数</th>
+                      <th class="text-right py-1">合計金額</th>
+                    </tr>
+                  </thead>
+                  <tbody id="month-employee-body"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- per day -->
+            <div>
+              <h3 class="text-xs sm:text-sm text-slate-300 mb-2">日別集計</h3>
+              <div class="overflow-x-auto">
+                <table class="min-w-full border-collapse">
+                  <thead>
+                    <tr class="border-b border-slate-700 text-slate-300">
+                      <th class="text-left py-1 pr-4">日付</th>
+                      <th class="text-right py-1 pr-4">注文数</th>
+                      <th class="text-right py-1">合計金額</th>
+                    </tr>
+                  </thead>
+                  <tbody id="month-day-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
