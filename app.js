@@ -140,11 +140,14 @@ tabOrder.addEventListener('click', () => activateTab('order'));
 tabDashboard.addEventListener('click', () => activateTab('dashboard'));
 
 // ====== Load employees ======
+// daftar karyawan disimpan global (untuk search, kalau mau)
+let allEmployees = [];
+
 async function loadEmployees() {
   try {
     const data = await apiGet({ action: 'getEmployees' });
 
-    // Normalisasi: boleh string lama, boleh object baru
+    // Normalisasi: support format lama (string) atau baru (object)
     allEmployees = (data.employees || []).map(emp => {
       if (typeof emp === 'string') {
         return { name: emp, dept: '' };
@@ -155,6 +158,7 @@ async function loadEmployees() {
       };
     }).filter(e => e.name);
 
+    // render pertama tanpa filter
     renderEmployeeOptions('');
   } catch (err) {
     console.error(err);
@@ -165,6 +169,36 @@ async function loadEmployees() {
     employeeSelect.appendChild(opt);
   }
 }
+function renderEmployeeOptions(filterText) {
+  const keyword = (filterText || '').toLowerCase();
+  employeeSelect.innerHTML = '';
+
+  const filtered = allEmployees.filter(e => {
+    if (!keyword) return true;
+    return (
+      e.name.toLowerCase().includes(keyword) ||
+      (e.dept && e.dept.toLowerCase().includes(keyword))
+    );
+  });
+
+  if (filtered.length === 0) {
+    const opt = document.createElement('option');
+    opt.value = '';
+    opt.textContent = '該当する社員が見つかりません';
+    employeeSelect.appendChild(opt);
+    return;
+  }
+
+  filtered.forEach(e => {
+    const opt = document.createElement('option');
+    opt.value = e.name;                          // ke backend tetap nama saja
+    opt.textContent = e.dept
+      ? `${e.name}（${e.dept}）`
+      : e.name;                                  // tampil: 山田（生産管理部）
+    employeeSelect.appendChild(opt);
+  });
+}
+
 function renderEmployeeOptions(filterText) {
   const keyword = (filterText || '').toLowerCase();
   employeeSelect.innerHTML = '';
