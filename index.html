@@ -60,93 +60,92 @@
     <main class="space-y-6 sm:space-y-8">
 
       <!-- Order Section -->
-      <section id="order-section" class="space-y-4 sm:space-y-6">
-        <!-- Bento info -->
-        <div class="bg-white border border-sky-100 rounded-2xl p-4 sm:p-5 shadow-sm shadow-sky-100">
-          <h2 class="text-base sm:text-lg font-semibold mb-2 flex items-center gap-2 text-sky-900">
-            <span>本日のメニュー</span>
-            <span id="today-date-label" class="text-xs sm:text-sm text-slate-500"></span>
-          </h2>
-          <div id="today-menu" class="text-sm sm:text-base text-slate-800">
-            読み込み中…
-          </div>
+     <section id="order-section" class="mt-6">
+  <div class="rounded-3xl bg-white/90 border border-sky-100 shadow-sm p-5 sm:p-6">
+    <div class="flex items-center gap-2 mb-4">
+      <div class="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center text-sky-600 text-sm">
+        🍱
+      </div>
+      <div>
+        <h2 class="text-sm sm:text-base font-semibold text-sky-900">弁当注文フォーム</h2>
+        <p class="text-[11px] text-slate-500 mt-0.5">社員用の日替わり弁当をここから注文できます。</p>
+      </div>
+      <div class="ml-auto hidden sm:block text-[11px] text-slate-400">
+        締切：当日 09:30 まで
+      </div>
+    </div>
+
+    <form id="order-form" class="space-y-4">
+      <!-- 日付 -->
+      <div class="space-y-1">
+        <label for="order-date" class="block text-xs sm:text-sm text-slate-600">
+          日付（受け取り日）
+        </label>
+        <div class="relative">
+          <input
+            id="order-date"
+            type="date"
+            class="w-full rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400" />
+          <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400">
+            📅
+          </span>
         </div>
+      </div>
 
-        <!-- Form -->
-        <div class="bg-white border border-sky-100 rounded-2xl p-4 sm:p-5 shadow-sm shadow-sky-100">
-          <h2 class="text-base sm:text-lg font-semibold mb-4 text-sky-900">
-            弁当注文フォーム
-          </h2>
+      <!-- 社員名 + search -->
+      <div class="space-y-1">
+        <label class="block text-xs sm:text-sm text-slate-600">
+          社員名
+        </label>
+        <input
+          id="employee-search"
+          type="text"
+          placeholder="社員名・部署で検索"
+          class="w-full mb-2 rounded-xl border border-sky-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400" />
+        <select
+          id="employee-name"
+          class="w-full rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400">
+        </select>
+        <p class="text-[11px] text-slate-500 mt-1">
+          社員マスタに登録されていない場合は社員マスタ用シートで追加してください。
+        </p>
+      </div>
 
-          <form id="order-form" class="space-y-4 sm:space-y-5">
-            <!-- Date -->
-            <div class="space-y-1">
-              <label class="block text-xs sm:text-sm text-slate-600">
-                日付（受け取り日）
-              </label>
-              <input
-                type="date"
-                id="order-date"
-                class="w-full rounded-xl bg-sky-50 border border-sky-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-              />
-            </div>
-
-            <!-- Employee -->
-           <!-- Employee -->
-<div class="space-y-1">
-  <label class="block text-xs sm:text-sm text-slate-600">
-    社員名
-  </label>
-
-  <!-- Search box -->
-  <input
-    type="text"
-    id="employee-search"
-    placeholder="社員名・部署で検索"
-    class="mb-2 w-full rounded-xl bg-white border border-sky-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-  />
-
-  <select
-    id="employee-name"
-    class="w-full rounded-xl bg-sky-50 border border-sky-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400">
-  </select>
-  <p class="text-[11px] text-slate-500 mt-1">
-    社員マスタに登録されていない場合は別シートで追加してください。
-  </p>
-</div>
-
-
-            <!-- Order / not order -->
-            <div class="space-y-1">
-              <span class="block text-xs sm:text-sm text-slate-600 mb-1">
-                弁当を注文しますか？
-              </span>
-              <div class="flex flex-col sm:flex-row gap-2">
-                <label
-                  class="flex-1 flex items-center gap-2 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm cursor-pointer hover:border-sky-400">
-                  <input type="radio" name="order-status" value="order" class="text-sky-500" checked />
-                  <span>注文する</span>
-                </label>
-                <label
-                  class="flex-1 flex items-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-3 py-2 text-sm cursor-pointer hover:border-orange-400">
-                  <input type="radio" name="order-status" value="noOrder" class="text-orange-500" />
-                  <span>注文しない</span>
-                </label>
-              </div>
-            </div>
-
-            <!-- Actions -->
-            <div class="flex flex-col sm:flex-row gap-3 sm:items-center justify-between pt-2">
-              <button
-                type="submit"
-                class="inline-flex items-center justify-center rounded-xl bg-sky-600 hover:bg-sky-500 text-sm font-semibold px-4 py-2 text-white shadow-md shadow-sky-200">
-                送信する
-              </button>
-              <p id="form-message" class="text-xs sm:text-sm text-slate-600"></p>
-            </div>
-          </form>
+      <!-- ラジオボタン: 注文する / 注文しない -->
+      <div class="space-y-1">
+        <label class="block text-xs sm:text-sm text-slate-600">
+          弁当を注文しますか？
+        </label>
+        <div class="grid grid-cols-2 gap-2 text-sm">
+          <label class="flex items-center justify-center gap-2 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 cursor-pointer hover:border-sky-400">
+            <input type="radio" name="order-status" value="order" class="hidden" checked />
+            <span class="inline-flex h-4 w-4 items-center justify-center rounded-full border border-sky-400 bg-white">
+              <span class="h-2.5 w-2.5 rounded-full bg-sky-500"></span>
+            </span>
+            <span class="text-sky-800 text-xs sm:text-sm">注文する</span>
+          </label>
+          <label class="flex items-center justify-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-3 py-2 cursor-pointer hover:border-orange-400">
+            <input type="radio" name="order-status" value="noOrder" class="hidden" />
+            <span class="inline-flex h-4 w-4 items-center justify-center rounded-full border border-orange-400 bg-white">
+              <span class="h-2.5 w-2.5 rounded-full bg-orange-500 opacity-80"></span>
+            </span>
+            <span class="text-orange-800 text-xs sm:text-sm">注文しない</span>
+          </label>
         </div>
-      </section>
+      </div>
+
+      <!-- メッセージ + 送信ボタン -->
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3 pt-2">
+        <p id="form-message" class="text-xs text-slate-500 flex-1"></p>
+        <button
+          type="submit"
+          class="inline-flex items-center justify-center rounded-xl bg-sky-500 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-600">
+          送信する
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
 
       <!-- Dashboard Section -->
       <section id="dashboard-section" class="hidden space-y-4 sm:space-y-6">
