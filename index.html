@@ -92,18 +92,29 @@
             </div>
 
             <!-- Employee -->
-            <div class="space-y-1">
-              <label class="block text-xs sm:text-sm text-slate-600">
-                社員名
-              </label>
-              <select
-                id="employee-name"
-                class="w-full rounded-xl bg-sky-50 border border-sky-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400">
-              </select>
-              <p class="text-[11px] text-slate-500 mt-1">
-                社員マスタに登録されていない場合は別シートで追加してください。
-              </p>
-            </div>
+           <!-- Employee -->
+<div class="space-y-1">
+  <label class="block text-xs sm:text-sm text-slate-600">
+    社員名
+  </label>
+
+  <!-- Search box -->
+  <input
+    type="text"
+    id="employee-search"
+    placeholder="社員名・部署で検索"
+    class="mb-2 w-full rounded-xl bg-white border border-sky-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+  />
+
+  <select
+    id="employee-name"
+    class="w-full rounded-xl bg-sky-50 border border-sky-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400">
+  </select>
+  <p class="text-[11px] text-slate-500 mt-1">
+    社員マスタに登録されていない場合は別シートで追加してください。
+  </p>
+</div>
+
 
             <!-- Order / not order -->
             <div class="space-y-1">
