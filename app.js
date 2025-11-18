@@ -195,12 +195,8 @@ function weatherEmojiFromMain(main) {
     default:             return '🌤';
   }
 }
-
-function loadWeather() {
-  if (!weatherHeaderText) return;
-
-  // --- fallback kalau belum pakai API sungguhan ---
- async function loadWeather() {
+// >>> GANTI loadWeather DENGAN INI <<<
+async function loadWeather() {
   // kalau elemen header tidak ada, langsung keluar
   if (!weatherHeaderText) return;
 
@@ -226,7 +222,9 @@ function loadWeather() {
     const data = await res.json();
 
     const temp = Math.round(data.main?.temp ?? 0);
-    const wObj = (data.weather && data.weather[0]) ? data.weather[0] : null;
+    const wObj =
+      Array.isArray(data.weather) && data.weather[0] ? data.weather[0] : null;
+
     const main = wObj?.main ?? '';
     const desc = wObj?.description ?? '';
     const emoji = weatherEmojiFromMain(main);
@@ -238,32 +236,6 @@ function loadWeather() {
   }
 }
 
-  // -----------------------------------------------
-
-  weatherHeaderText.textContent = '天気取得中…';
-
-
-  try {
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
-      WEATHER_CITY
-    )}&lang=ja&units=metric&appid=${WEATHER_API_KEY}`;
-
-    const res  = await fetch(url);
-    if (!res.ok) throw new Error('weather response error');
-    const data = await res.json();
-
-    const temp = Math.round(data.main.temp);
-    const wObj = data.weather && data.weather[0] ? data.weather[0] : null;
-    const main = wObj ? wObj.main : '';
-    const desc = wObj ? wObj.description : '';
-    const emoji = weatherEmojiFromMain(main);
-
-    weatherHeaderText.textContent = `天気：${emoji} ${desc} ${temp}℃`;
-  } catch (err) {
-    console.error(err);
-    weatherHeaderText.textContent = '天気情報取得エラー';
-  }
-}
 
 // ====== Load employees ======
 async function loadEmployees() {
