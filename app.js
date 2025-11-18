@@ -261,88 +261,92 @@ function setupHeroCarousel() {
 }
 
 // ====== Menu per date ======
+// ====== Menu per date ======
 async function loadMenuForDate(dateStr) {
-  if (todayMenuDiv) {
-    todayMenuDiv.textContent = "読み込み中…";
-  }
+  // label tanggal di header
   if (todayDateLabel) {
     todayDateLabel.textContent = `(${dateStr})`;
+  }
+  if (todayMenuDiv) {
+    todayMenuDiv.textContent = "読み込み中…";
   }
 
   try {
     const data = await apiGet({ action: "getMenu", date: dateStr });
-    const menu = data.menu;
-    if (!menu) {
-      if (todayMenuDiv) {
-        todayMenuDiv.textContent = "メニュー未登録";
-      }
-    } else {
-      const hasImage = !!menu.imageUrl;
-      const heroHtml = `
-        <div id="hero-slides"
-             class="relative w-32 sm:w-40 h-24 sm:h-28 rounded-2xl overflow-hidden border border-white/70 shadow-sm bg-white/80 flex-shrink-0">
-          ${
-            hasImage
-              ? `
-          <div class="absolute inset-0 transition-opacity duration-700 ease-in-out" data-slide-index="0">
-            <img src="${menu.imageUrl}"
-                 alt="${menu.name || ''}"
-                 class="w-full h-full object-cover" />
-          </div>
-          <div class="absolute inset-0 transition-opacity duration-700 ease-in-out opacity-0" data-slide-index="1">
-            <img src="./images/food-bg-1.png"
-                 alt="food"
-                 class="w-full h-full object-cover" />
-          </div>
-          <div class="absolute inset-0 transition-opacity duration-700 ease-in-out opacity-0" data-slide-index="2">
-            <img src="./images/food-bg-2.png"
-                 alt="food"
-                 class="w-full h-full object-cover" />
-          </div>
-          `
-              : `
-          <div class="absolute inset-0 flex items-center justify-center text-[11px] text-slate-400">
-            画像未登録
-          </div>
-          `
-          }
+    const menu = data.menu || null;
+
+    // kalau belum ada baris di sheet → pakai placeholder
+    const name = menu?.name || "メニュー未登録";
+    const price = menu?.price || 0;
+    const dateDisplay = menu?.date || dateStr;
+    const imageUrl = menu?.imageUrl || "";
+    const hasMenuImage = !!imageUrl;
+
+    if (!todayMenuDiv) return;
+
+    todayMenuDiv.innerHTML = `
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-sky-50 via-white to-orange-50 border border-sky-100 shadow-sm">
+        <!-- background dekoratif -->
+        <div class="pointer-events-none absolute -right-10 -top-10 w-40 h-40 opacity-15">
+          <img src="./images/food-bg.png" alt="" class="w-full h-full object-contain">
         </div>
-      `;
 
-      if (todayMenuDiv) {
-        todayMenuDiv.innerHTML = `
-          <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-sky-50 via-white to-orange-50 border border-sky-100 shadow-sm">
-            <!-- background dekoratif -->
-            <div class="pointer-events-none absolute -right-10 -top-10 w-40 h-40 opacity-15">
-              <img src="./images/food-bg.png" alt="" class="w-full h-full object-contain">
-            </div>
-
-            <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6">
-              <div class="flex-1">
-                <p class="text-xs font-semibold tracking-wide text-sky-500">本日のメニュー</p>
-                <p class="mt-1 text-lg sm:text-xl font-semibold text-sky-900">
-                  ${menu.name || "未設定"}
-                </p>
-                <p class="mt-1 text-xs text-slate-500">日付: ${menu.date}</p>
-                <p class="mt-3 text-sm text-slate-700">
-                  価格：
-                  <span class="font-bold text-orange-600">${formatJPY(
-                    menu.price || 0
-                  )}</span>
-                </p>
-                <p class="mt-1 text-[11px] text-slate-400">
-                  社員向け日替わり弁当です。
-                </p>
-              </div>
-
-              ${heroHtml}
-            </div>
+        <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6">
+          <div class="flex-1">
+            <p class="text-xs font-semibold tracking-wide text-sky-500">本日のメニュー</p>
+            <p class="mt-1 text-lg sm:text-xl font-semibold text-sky-900">
+              ${name}
+            </p>
+            <p class="mt-1 text-xs text-slate-500">日付: ${dateDisplay}</p>
+            <p class="mt-3 text-sm text-slate-700">
+              価格：
+              <span class="font-bold text-orange-600">${formatJPY(price || 0)}</span>
+            </p>
+            ${
+              menu
+                ? `<p class="mt-1 text-[11px] text-slate-400">社員向け日替わり弁当です。</p>`
+                : `<p class="mt-1 text-[11px] text-slate-400">メニューが未登録です。Menusシートに追加してください。</p>`
+            }
           </div>
-        `;
-      }
 
-      setupHeroCarousel();
-    }
+          <!-- slideshow kecil di kanan -->
+          <div id="hero-slides"
+               class="relative w-32 sm:w-40 h-24 sm:h-28 rounded-2xl overflow-hidden border border-white/70 shadow-sm bg-white/80 flex-shrink-0">
+            ${
+              hasMenuImage
+                ? `
+              <!-- slide 1: foto bento dari Google Drive -->
+              <div class="absolute inset-0 transition-opacity duration-700 ease-in-out" data-slide-index="0">
+                <img src="${imageUrl}" alt="${name}" class="w-full h-full object-cover" />
+              </div>
+              <!-- slide 2–3: background makanan -->
+              <div class="absolute inset-0 transition-opacity duration-700 ease-in-out opacity-0" data-slide-index="1">
+                <img src="./images/food-bg-1.png" alt="" class="w-full h-full object-cover" />
+              </div>
+              <div class="absolute inset-0 transition-opacity duration-700 ease-in-out opacity-0" data-slide-index="2">
+                <img src="./images/food-bg-2.png" alt="" class="w-full h-full object-cover" />
+              </div>
+            `
+                : `
+              <!-- kalau belum ada gambar menu, pakai 3 background saja -->
+              <div class="absolute inset-0 transition-opacity duration-700 ease-in-out" data-slide-index="0">
+                <img src="./images/food-bg-1.png" alt="" class="w-full h-full object-cover" />
+              </div>
+              <div class="absolute inset-0 transition-opacity duration-700 ease-in-out opacity-0" data-slide-index="1">
+                <img src="./images/food-bg-2.png" alt="" class="w-full h-full object-cover" />
+              </div>
+              <div class="absolute inset-0 transition-opacity duration-700 ease-in-out opacity-0" data-slide-index="2">
+                <img src="./images/food-bg-3.png" alt="" class="w-full h-full object-cover" />
+              </div>
+            `
+            }
+          </div>
+        </div>
+      </div>
+    `;
+
+    // aktifkan slideshow
+    setupHeroCarousel();
   } catch (err) {
     console.error(err);
     if (todayMenuDiv) {
