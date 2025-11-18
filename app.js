@@ -262,8 +262,8 @@ function setupHeroCarousel() {
 
 // ====== Menu per date ======
 // ====== Menu per date ======
+// ====== Menu per date ======
 async function loadMenuForDate(dateStr) {
-  // label tanggal di header
   if (todayDateLabel) {
     todayDateLabel.textContent = `(${dateStr})`;
   }
@@ -275,7 +275,6 @@ async function loadMenuForDate(dateStr) {
     const data = await apiGet({ action: "getMenu", date: dateStr });
     const menu = data.menu || null;
 
-    // kalau belum ada baris di sheet → pakai placeholder
     const name = menu?.name || "メニュー未登録";
     const price = menu?.price || 0;
     const dateDisplay = menu?.date || dateStr;
@@ -285,12 +284,15 @@ async function loadMenuForDate(dateStr) {
     if (!todayMenuDiv) return;
 
     todayMenuDiv.innerHTML = `
-      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-sky-50 via-white to-orange-50 border border-sky-100 shadow-sm">
-        <!-- background dekoratif -->
-        <div class="pointer-events-none absolute -right-10 -top-10 w-40 h-40 opacity-15">
-          <img src="./images/food-bg.png" alt="" class="w-full h-full object-contain">
-        </div>
-
+      <div
+        class="relative overflow-hidden rounded-3xl border border-sky-100 shadow-sm bg-gradient-to-r from-sky-50 via-white to-orange-50"
+        style="
+          background-image: url('./images/food-bg.png');
+          background-repeat: no-repeat;
+          background-position: right bottom;
+          background-size: 220px auto;
+        "
+      >
         <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6">
           <div class="flex-1">
             <p class="text-xs font-semibold tracking-wide text-sky-500">本日のメニュー</p>
@@ -354,6 +356,7 @@ async function loadMenuForDate(dateStr) {
     }
   }
 }
+
 
 // ====== Submit order ======
 if (orderForm) {
