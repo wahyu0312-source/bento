@@ -212,6 +212,59 @@
                   </div>
                 </label>
               </div>
+<!-- 月内複数日一括注文（オプション） -->
+<div class="mt-4 border-t border-slate-100 pt-3 space-y-2">
+  <div class="flex items-center justify-between">
+    <span class="text-[11px] sm:text-xs text-slate-600">
+      今月の複数日をまとめて登録（オプション）
+    </span>
+    <div class="flex items-center gap-2 text-[11px] sm:text-xs">
+      <label class="flex items-center gap-1 cursor-pointer">
+        <input type="checkbox" id="multi-mode-toggle" class="rounded border-slate-300" />
+        <span>有効にする</span>
+      </label>
+    </div>
+  </div>
+
+  <div id="multi-panel" class="space-y-2 hidden">
+    <div class="flex flex-wrap items-center gap-2">
+      <label class="text-[11px] sm:text-xs text-slate-600">
+        対象月：
+      </label>
+      <input
+        id="multi-month"
+        type="month"
+        class="rounded-xl border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+      />
+      <button
+        type="button"
+        id="btn-generate-multi-days"
+        class="px-3 py-1.5 rounded-xl bg-sky-500 text-xs sm:text-sm text-white hover:bg-sky-600"
+      >
+        日付一覧を表示
+      </button>
+    </div>
+
+    <div
+      id="multi-days-container"
+      class="max-h-48 overflow-y-auto rounded-2xl border border-sky-100 bg-sky-50/60 px-3 py-2 text-[11px] sm:text-xs text-slate-700"
+    >
+      <p class="text-[11px] sm:text-xs text-slate-500">
+        上のボタンを押して日付一覧を表示してください。
+      </p>
+    </div>
+
+    <div class="flex justify-end">
+      <button
+        type="button"
+        id="btn-submit-multi"
+        class="px-4 py-1.5 rounded-xl bg-orange-500 text-xs sm:text-sm text-white font-semibold hover:bg-orange-600"
+      >
+        選択した日付で一括登録
+      </button>
+    </div>
+  </div>
+</div>
 
               <!-- TEXT BERJALAN DI SINI -->
               <div class="mt-1 overflow-hidden rounded-xl bg-sky-50 border border-sky-100">
