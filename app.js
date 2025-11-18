@@ -5,6 +5,9 @@
 // ====== SETTING ======
 const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwevJsl--6Sy1JRWJzTrlybNRlTvkttpc7xsM03-nOhvhb6pGH2PlP7AHLA8QqwjZmZ/exec'; // ← ganti dengan URL Web App GAS kamu
 // =====================
+// Weather (OpenWeatherMap)
+const WEATHER_API_KEY  = '';           // ← isi dengan API key OpenWeatherMap kamu
+const WEATHER_CITY     = 'Yokohama,jp';   // bisa diganti 'Yokohama,jp' dll
 
 // ====== Utils ======
 function formatJPY(amount) {
@@ -31,6 +34,16 @@ function toDateStr(d) {
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return `${y}-${m}-${day}`;
+}
+function formatTodayHeader(dateStr) {
+  // dateStr: "YYYY-MM-DD"
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '本日 -';
+  const y  = d.getFullYear();
+  const m  = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const w  = weekdayJa[d.getDay()] || '';
+  return `本日 ${y}/${m}/${dd}（${w}）`;
 }
 
 function getWeekRange(dateStr) {
@@ -88,6 +101,9 @@ function downloadCsv(filename, rows) {
 }
 
 // ====== DOM refs ======
+const todayHeaderText    = document.getElementById('today-header-text');
+const weatherHeaderText  = document.getElementById('weather-header-text');
+
 const orderSection      = document.getElementById('order-section');
 const dashboardSection  = document.getElementById('dashboard-section');
 const tabOrder          = document.getElementById('tab-order');
@@ -166,6 +182,50 @@ if (tabOrder) {
 }
 if (tabDashboard) {
   tabDashboard.addEventListener('click', () => activateTab('dashboard'));
+}
+function weatherEmojiFromMain(main) {
+  const key = (main || '').toLowerCase();
+  switch (key) {
+    case 'clear':        return '☀';
+    case 'clouds':       return '⛅';
+    case 'rain':         return '🌧';
+    case 'drizzle':      return '🌦';
+    case 'thunderstorm': return '⛈';
+    case 'snow':         return '❄';
+    default:             return '🌤';
+  }
+}
+
+async function loadWeather() {
+  if (!weatherHeaderText) return;
+  if (!WEATHER_API_KEY) {
+    // kalau belum diisi API key, kosongkan saja biar tidak ganggu UI
+    weatherHeaderText.textContent = '';
+    return;
+  }
+
+  weatherHeaderText.textContent = '天気取得中…';
+
+  try {
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
+      WEATHER_CITY
+    )}&lang=ja&units=metric&appid=${WEATHER_API_KEY}`;
+
+    const res  = await fetch(url);
+    if (!res.ok) throw new Error('weather response error');
+    const data = await res.json();
+
+    const temp = Math.round(data.main.temp);
+    const wObj = data.weather && data.weather[0] ? data.weather[0] : null;
+    const main = wObj ? wObj.main : '';
+    const desc = wObj ? wObj.description : '';
+    const emoji = weatherEmojiFromMain(main);
+
+    weatherHeaderText.textContent = `天気：${emoji} ${desc} ${temp}℃`;
+  } catch (err) {
+    console.error(err);
+    weatherHeaderText.textContent = '天気情報取得エラー';
+  }
 }
 
 // ====== Load employees ======
@@ -559,17 +619,27 @@ if (dashboardDateInput) {
 let currentSystemDate = todayStr();
 setInterval(async () => {
   const now = todayStr();
-  if (now !== currentSystemDate) {
+   if (now !== currentSystemDate) {
     currentSystemDate = now;
-    if (orderDateInput) orderDateInput.value = now;
-    if (dashboardDateInput) dashboardDateInput.value = now;
+
+    if (orderDateInput)      orderDateInput.value = now;
+    if (dashboardDateInput)  dashboardDateInput.value = now;
     if (dashboardMonthInput) dashboardMonthInput.value = monthStrFromDateStr(now);
+
+    // update header tanggal
+    if (todayHeaderText) {
+      todayHeaderText.textContent = formatTodayHeader(now);
+    }
+    // refresh cuaca sehari sekali
+    loadWeather();
+
     await loadMenuForDate(now);
     await Promise.all([
       loadDaySummary(now),
       loadMonthSummary(monthStrFromDateStr(now)),
     ]);
   }
+
 }, 60 * 1000);
 
 // ====== Download Excel/CSV (day / week / month) ======
@@ -902,10 +972,17 @@ if (btnDownloadEmpPdf) {
 // ====== Init ======
 async function init() {
   const today = todayStr();
-  if (orderDateInput) orderDateInput.value = today;
-  if (dashboardDateInput) dashboardDateInput.value = today;
+  if (orderDateInput)      orderDateInput.value = today;
+  if (dashboardDateInput)  dashboardDateInput.value = today;
   if (dashboardMonthInput) dashboardMonthInput.value = monthStrFromDateStr(today);
-  if (multiMonthInput) multiMonthInput.value = today.slice(0, 7);
+  if (multiMonthInput)     multiMonthInput.value = today.slice(0, 7);
+
+  // Header: tanggal + hari
+  if (todayHeaderText) {
+    todayHeaderText.textContent = formatTodayHeader(today);
+  }
+  // Header: cuaca
+  loadWeather();
 
   await loadEmployees();
   await loadMenuForDate(today);
