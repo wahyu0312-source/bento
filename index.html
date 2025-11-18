@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TSH 弁当注文</title>
-  <meta name="description" content="社員向け弁当の注文システム" />
+  <meta name="description" content="社員向け日替わり弁当の注文システム" />
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- PWA / Icons (sesuaikan kalau perlu) -->
+  <!-- PWA / Icons -->
   <link rel="icon" type="image/png" href="./tsh.png" />
   <link rel="apple-touch-icon" href="./icon-192.png" />
   <link rel="manifest" href="./manifest.json" />
@@ -22,7 +22,7 @@
       animation: marquee 18s linear infinite;
     }
     .marquee:hover {
-      animation-play-state: paused; /* bisa di-pause kalau di-hover */
+      animation-play-state: paused;
     }
     @keyframes marquee {
       0%   { transform: translateX(100%); }
@@ -31,7 +31,6 @@
   </style>
 </head>
 
-<!-- tambah text-sm sm:text-base supaya semua font sedikit lebih besar -->
 <body class="min-h-screen bg-gradient-to-b from-sky-50 to-orange-50/40 text-sm sm:text-base">
   <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
     <!-- Header -->
@@ -45,7 +44,7 @@
             TSH 弁当注文
           </h1>
           <p class="text-xs sm:text-sm text-slate-500">
-            社員向け日替わり弁当の注文
+            社員向け弁当の注文
           </p>
         </div>
       </div>
@@ -58,7 +57,7 @@
             Windows / Android インストール可
           </span>
         </div>
-        <span class="text-slate-400">Design by wahyu</span>
+        <span class="text-slate-400">＠生産技術</span>
       </div>
     </header>
 
@@ -119,10 +118,10 @@
           </div>
 
           <form id="order-form" class="space-y-4">
-            <!-- 日付 -->
+            <!-- 日付（1日だけ） -->
             <div class="space-y-1">
               <label for="order-date" class="block text-xs sm:text-sm text-slate-600">
-                日付（受け取り日）
+                日付（受け取り日 / 単日）
               </label>
               <div class="relative">
                 <input
@@ -160,7 +159,7 @@
               </p>
             </div>
 
-            <!-- ラジオ: 注文する / 注文しない + TEXT BERJALAN -->
+            <!-- ラジオ: 注文する / 注文しない + text berjalan -->
             <div class="space-y-2">
               <label class="block text-xs sm:text-sm text-slate-600">
                 弁当を注文しますか？
@@ -212,66 +211,67 @@
                   </div>
                 </label>
               </div>
-<!-- 月内複数日一括注文（オプション） -->
-<div class="mt-4 border-t border-slate-100 pt-3 space-y-2">
-  <div class="flex items-center justify-between">
-    <span class="text-[11px] sm:text-xs text-slate-600">
-      今月の複数日をまとめて登録（オプション）
-    </span>
-    <div class="flex items-center gap-2 text-[11px] sm:text-xs">
-      <label class="flex items-center gap-1 cursor-pointer">
-        <input type="checkbox" id="multi-mode-toggle" class="rounded border-slate-300" />
-        <span>有効にする</span>
-      </label>
-    </div>
-  </div>
 
-  <div id="multi-panel" class="space-y-2 hidden">
-    <div class="flex flex-wrap items-center gap-2">
-      <label class="text-[11px] sm:text-xs text-slate-600">
-        対象月：
-      </label>
-      <input
-        id="multi-month"
-        type="month"
-        class="rounded-xl border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-      />
-      <button
-        type="button"
-        id="btn-generate-multi-days"
-        class="px-3 py-1.5 rounded-xl bg-sky-500 text-xs sm:text-sm text-white hover:bg-sky-600"
-      >
-        日付一覧を表示
-      </button>
-    </div>
-
-    <div
-      id="multi-days-container"
-      class="max-h-48 overflow-y-auto rounded-2xl border border-sky-100 bg-sky-50/60 px-3 py-2 text-[11px] sm:text-xs text-slate-700"
-    >
-      <p class="text-[11px] sm:text-xs text-slate-500">
-        上のボタンを押して日付一覧を表示してください。
-      </p>
-    </div>
-
-    <div class="flex justify-end">
-      <button
-        type="button"
-        id="btn-submit-multi"
-        class="px-4 py-1.5 rounded-xl bg-orange-500 text-xs sm:text-sm text-white font-semibold hover:bg-orange-600"
-      >
-        選択した日付で一括登録
-      </button>
-    </div>
-  </div>
-</div>
-
-              <!-- TEXT BERJALAN DI SINI -->
+              <!-- TEXT BERJALAN -->
               <div class="mt-1 overflow-hidden rounded-xl bg-sky-50 border border-sky-100">
                 <div class="marquee px-3 py-1.5 text-[11px] sm:text-xs text-sky-700">
                   本日の締切は <span class="font-semibold">9:30</span> までです。　
                   注文内容と日付を必ずご確認ください。　
                   注文しない場合も「注文しない」を選択して送信してください。
+                </div>
+              </div>
+            </div>
+
+            <!-- 月内複数日一括注文（オプション） -->
+            <div class="mt-4 border-t border-slate-100 pt-3 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] sm:text-xs text-slate-600">
+                  今月の複数日をまとめて登録（オプション）
+                </span>
+                <div class="flex items-center gap-2 text-[11px] sm:text-xs">
+                  <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="checkbox" id="multi-mode-toggle" class="rounded border-slate-300" />
+                    <span>有効にする</span>
+                  </label>
+                </div>
+              </div>
+
+              <div id="multi-panel" class="space-y-2 hidden">
+                <div class="flex flex-wrap items-center gap-2">
+                  <label class="text-[11px] sm:text-xs text-slate-600">
+                    対象月：
+                  </label>
+                  <input
+                    id="multi-month"
+                    type="month"
+                    class="rounded-xl border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+                  />
+                  <button
+                    type="button"
+                    id="btn-generate-multi-days"
+                    class="px-3 py-1.5 rounded-xl bg-sky-500 text-xs sm:text-sm text-white hover:bg-sky-600"
+                  >
+                    日付一覧を表示
+                  </button>
+                </div>
+
+                <div
+                  id="multi-days-container"
+                  class="max-h-48 overflow-y-auto rounded-2xl border border-sky-100 bg-sky-50/60 px-3 py-2 text-[11px] sm:text-xs text-slate-700"
+                >
+                  <p class="text-[11px] sm:text-xs text-slate-500">
+                    上のボタンを押して日付一覧を表示してください。
+                  </p>
+                </div>
+
+                <div class="flex justify-end">
+                  <button
+                    type="button"
+                    id="btn-submit-multi"
+                    class="px-4 py-1.5 rounded-xl bg-orange-500 text-xs sm:text-sm text-white font-semibold hover:bg-orange-600"
+                  >
+                    選択した日付で一括登録
+                  </button>
                 </div>
               </div>
             </div>
@@ -407,63 +407,6 @@
                 </table>
               </div>
             </div>
-            <!-- Employee Summary -->
-<div class="rounded-3xl bg-white/90 border border-sky-100 shadow-sm p-5 sm:p-6 mt-5">
-  <h3 class="text-sm sm:text-base font-semibold text-sky-900 mb-3">社員別サマリー</h3>
-
-  <div class="grid sm:grid-cols-3 gap-3 mb-3">
-    <div class="sm:col-span-1">
-      <label class="block text-xs sm:text-sm text-slate-600 mb-1">社員名</label>
-      <select
-        id="summary-employee"
-        class="w-full rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-      >
-        <!-- JS で allEmployees から埋める -->
-      </select>
-    </div>
-    <div>
-      <label class="block text-xs sm:text-sm text-slate-600 mb-1">対象月</label>
-      <input
-        id="summary-month"
-        type="month"
-        class="w-full rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-      />
-    </div>
-    <div class="flex items-end">
-      <button
-        type="button"
-        id="btn-load-employee-summary"
-        class="px-4 py-2 rounded-xl bg-sky-500 text-xs sm:text-sm text-white font-semibold hover:bg-sky-600 w-full"
-      >
-        表示
-      </button>
-    </div>
-  </div>
-
-  <div class="flex flex-wrap gap-2 text-xs sm:text-sm mb-3">
-    <button
-      type="button"
-      id="btn-download-employee-excel"
-      class="px-3 py-1.5 rounded-xl border border-sky-200 bg-sky-50 text-sky-700 hover:bg-sky-100"
-    >
-      社員別Excel
-    </button>
-    <button
-      type="button"
-      id="btn-download-employee-pdf"
-      class="px-3 py-1.5 rounded-xl border border-orange-200 bg-orange-50 text-orange-700 hover:bg-orange-100"
-    >
-      社員別PDF
-    </button>
-  </div>
-
-  <div id="employee-summary-view" class="text-xs sm:text-sm text-slate-700">
-    <p class="text-[11px] sm:text-xs text-slate-500">
-      社員名と対象月を選択して「表示」をクリックしてください。
-    </p>
-  </div>
-</div>
-
             <div>
               <h4 class="text-xs font-semibold text-slate-600 mb-1">日別</h4>
               <div class="overflow-x-auto">
@@ -480,6 +423,63 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Employee Summary -->
+      <div class="rounded-3xl bg-white/90 border border-sky-100 shadow-sm p-5 sm:p-6">
+        <h3 class="text-sm sm:text-base font-semibold text-sky-900 mb-3">社員別サマリー</h3>
+
+        <div class="grid sm:grid-cols-3 gap-3 mb-3">
+          <div class="sm:col-span-1">
+            <label class="block text-xs sm:text-sm text-slate-600 mb-1">社員名</label>
+            <select
+              id="summary-employee"
+              class="w-full rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+            >
+              <!-- JS で allEmployees から埋める -->
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs sm:text-sm text-slate-600 mb-1">対象月</label>
+            <input
+              id="summary-month"
+              type="month"
+              class="w-full rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+            />
+          </div>
+          <div class="flex items-end">
+            <button
+              type="button"
+              id="btn-load-employee-summary"
+              class="px-4 py-2 rounded-xl bg-sky-500 text-xs sm:text-sm text-white font-semibold hover:bg-sky-600 w-full"
+            >
+              表示
+            </button>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 text-xs sm:text-sm mb-3">
+          <button
+            type="button"
+            id="btn-download-employee-excel"
+            class="px-3 py-1.5 rounded-xl border border-sky-200 bg-sky-50 text-sky-700 hover:bg-sky-100"
+          >
+            社員別Excel
+          </button>
+          <button
+            type="button"
+            id="btn-download-employee-pdf"
+            class="px-3 py-1.5 rounded-xl border border-orange-200 bg-orange-50 text-orange-700 hover:bg-orange-100"
+          >
+            社員別PDF
+          </button>
+        </div>
+
+        <div id="employee-summary-view" class="text-xs sm:text-sm text-slate-700">
+          <p class="text-[11px] sm:text-xs text-slate-500">
+            社員名と対象月を選択して「表示」をクリックしてください。
+          </p>
         </div>
       </div>
     </section>
