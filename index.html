@@ -407,6 +407,63 @@
                 </table>
               </div>
             </div>
+            <!-- Employee Summary -->
+<div class="rounded-3xl bg-white/90 border border-sky-100 shadow-sm p-5 sm:p-6 mt-5">
+  <h3 class="text-sm sm:text-base font-semibold text-sky-900 mb-3">社員別サマリー</h3>
+
+  <div class="grid sm:grid-cols-3 gap-3 mb-3">
+    <div class="sm:col-span-1">
+      <label class="block text-xs sm:text-sm text-slate-600 mb-1">社員名</label>
+      <select
+        id="summary-employee"
+        class="w-full rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+      >
+        <!-- JS で allEmployees から埋める -->
+      </select>
+    </div>
+    <div>
+      <label class="block text-xs sm:text-sm text-slate-600 mb-1">対象月</label>
+      <input
+        id="summary-month"
+        type="month"
+        class="w-full rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+      />
+    </div>
+    <div class="flex items-end">
+      <button
+        type="button"
+        id="btn-load-employee-summary"
+        class="px-4 py-2 rounded-xl bg-sky-500 text-xs sm:text-sm text-white font-semibold hover:bg-sky-600 w-full"
+      >
+        表示
+      </button>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap gap-2 text-xs sm:text-sm mb-3">
+    <button
+      type="button"
+      id="btn-download-employee-excel"
+      class="px-3 py-1.5 rounded-xl border border-sky-200 bg-sky-50 text-sky-700 hover:bg-sky-100"
+    >
+      社員別Excel
+    </button>
+    <button
+      type="button"
+      id="btn-download-employee-pdf"
+      class="px-3 py-1.5 rounded-xl border border-orange-200 bg-orange-50 text-orange-700 hover:bg-orange-100"
+    >
+      社員別PDF
+    </button>
+  </div>
+
+  <div id="employee-summary-view" class="text-xs sm:text-sm text-slate-700">
+    <p class="text-[11px] sm:text-xs text-slate-500">
+      社員名と対象月を選択して「表示」をクリックしてください。
+    </p>
+  </div>
+</div>
+
             <div>
               <h4 class="text-xs font-semibold text-slate-600 mb-1">日別</h4>
               <div class="overflow-x-auto">
