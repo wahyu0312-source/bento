@@ -6,7 +6,7 @@
 const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwevJsl--6Sy1JRWJzTrlybNRlTvkttpc7xsM03-nOhvhb6pGH2PlP7AHLA8QqwjZmZ/exec'; // ← ganti dengan URL Web App GAS kamu
 // =====================
 // Weather (OpenWeatherMap)
-const WEATHER_API_KEY  = '';           // ← isi dengan API key OpenWeatherMap kamu
+const WEATHER_API_KEY  = '9da4e73a2a764eafc9e32e5b39224a9c';           // ← isi dengan API key OpenWeatherMap kamu
 const WEATHER_CITY     = 'Yokohama,jp';   // bisa diganti 'Yokohama,jp' dll
 
 // ====== Utils ======
@@ -196,15 +196,18 @@ function weatherEmojiFromMain(main) {
   }
 }
 
-async function loadWeather() {
+function loadWeather() {
   if (!weatherHeaderText) return;
+
+  // --- fallback kalau belum pakai API sungguhan ---
   if (!WEATHER_API_KEY) {
-    // kalau belum diisi API key, kosongkan saja biar tidak ganggu UI
-    weatherHeaderText.textContent = '';
+    weatherHeaderText.textContent = '天気：🌤 くもり時々晴れ';
     return;
   }
+  // -----------------------------------------------
 
   weatherHeaderText.textContent = '天気取得中…';
+
 
   try {
     const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
