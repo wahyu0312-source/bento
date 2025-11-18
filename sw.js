@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bento-order-cache-v1';
+const CACHE_NAME = 'tsh-bento-v3';
 const CORE_ASSETS = [
   './',
   './index.html',
