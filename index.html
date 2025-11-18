@@ -31,7 +31,8 @@
   </style>
 </head>
 
-<body class="min-h-screen bg-gradient-to-b from-sky-50 to-orange-50/40">
+<body class="min-h-screen bg-gradient-to-b from-sky-50 to-orange-50/40 text-slate-800">
+
   <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
     <!-- ========= HEADER ========= -->
    <header class="flex items-center justify-between gap-4 mb-6 sm:mb-8">
@@ -106,7 +107,8 @@
     <section id="order-section" class="space-y-5 sm:space-y-6">
       <!-- Hari ini / menu card -->
       <div class="rounded-3xl bg-white/80 border border-sky-100 shadow-sm p-5 sm:p-6">
-        <div class="flex items-baseline justify-between gap-2 mb-2">
+       <div class="flex items-baseline justify-between text-xs sm:text-sm mb-3 text-sky-900">
+
           <div class="flex items-center gap-2">
             <h2 class="text-sm sm:text-base font-semibold text-sky-900">
               本日のメニュー
@@ -417,10 +419,8 @@
                   <th class="text-right px-2 py-1">小計</th>
                 </tr>
               </thead>
-              <tbody
-                id="day-orders-body"
-                class="text-slate-700 text-[11px] sm:text-xs"
-              ></tbody>
+              <tbody id="day-orders-body" class="text-sky-900 text-[11px] sm:text-xs"></tbody>
+
             </table>
           </div>
         </div>
@@ -446,10 +446,7 @@
                       <th class="text-right px-2 py-1">合計金額</th>
                     </tr>
                   </thead>
-                  <tbody
-                    id="month-employee-body"
-                    class="text-[11px] sm:text-xs text-slate-700"
-                  ></tbody>
+                  <tbody id="month-employee-body" class="text-[11px] sm:text-xs text-sky-900"></tbody>
                 </table>
               </div>
             </div>
@@ -464,10 +461,7 @@
                       <th class="text-right px-2 py-1">合計金額</th>
                     </tr>
                   </thead>
-                  <tbody
-                    id="month-day-body"
-                    class="text-[11px] sm:text-xs text-slate-700"
-                  ></tbody>
+                  <tbody id="month-day-body" class="text-[11px] sm:text-xs text-sky-900"></tbody>
                 </table>
               </div>
             </div>
