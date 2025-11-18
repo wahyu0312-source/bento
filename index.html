@@ -34,41 +34,56 @@
 <body class="min-h-screen bg-gradient-to-b from-sky-50 to-orange-50/40 text-sm sm:text-base">
   <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
     <!-- Header -->
-    <header class="flex items-center justify-between gap-4 mb-6 sm:mb-8">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center">
-          <img src="./tsh.png" alt="TSH" class="w-8 h-8 object-contain" />
-        </div>
-        <div>
-          <h1 class="text-xl sm:text-2xl font-semibold text-sky-900">
-            TSH 弁当注文
-          </h1>
-          <p class="text-xs sm:text-sm text-slate-500">
-            社員向け弁当の注文
-          </p>
-        </div>
-      </div>
-      <div class="flex flex-col items-end gap-1 text-[11px] sm:text-xs">
-  <div class="flex flex-wrap justify-end gap-1.5">
-    <span class="px-3 py-1 rounded-full bg-sky-50 text-sky-600 border border-sky-100">
-      モバイル最適化
-    </span>
-    <span class="px-3 py-1 rounded-full bg-orange-50 text-orange-600 border border-orange-100">
-      Windows / Android インストール可
-    </span>
+    <header
+  class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-8"
+>
+  <!-- Kiri: logo + judul -->
+  <div class="flex items-center gap-3">
+    <div class="w-11 h-11 rounded-2xl bg-white shadow-sm flex items-center justify-center">
+      <img src="./tsh.png" alt="TSH" class="w-8 h-8 object-contain" />
+    </div>
+    <div>
+      <h1 class="text-xl sm:text-2xl font-semibold text-sky-900">
+        TSH 弁当注文
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-500">
+        社員向け日替わり弁当の注文
+      </p>
+    </div>
   </div>
 
-  <!-- Tanggal + cuaca -->
-  <div class="flex items-center gap-2 text-[11px] sm:text-xs text-slate-500">
-    <span id="today-header-text">本日 -</span>
-    <span class="w-px h-3 bg-slate-300"></span>
-    <span id="weather-header-text" class="flex items-center gap-1">
-      天気取得中…
+  <!-- Kanan: badge + hari/tanggal + cuaca -->
+  <div class="flex flex-col items-end gap-1 text-[11px] sm:text-xs">
+    <div class="flex flex-wrap justify-end gap-1.5">
+      <span class="px-3 py-1 rounded-full bg-sky-50 text-sky-600 border border-sky-100">
+        モバイル最適化
+      </span>
+      <span class="px-3 py-1 rounded-full bg-orange-50 text-orange-600 border border-orange-100">
+        Windows / Android インストール可
+      </span>
+    </div>
+
+    <!-- Baris tanggal & cuaca: di HP ditumpuk vertikal -->
+    <div class="flex flex-col items-end leading-tight">
+      <span
+        id="today-header-text"
+        class="text-[11px] sm:text-xs text-slate-500"
+      >
+        <!-- Akan diisi JS: 本日 2025/11/18（火） -->
+      </span>
+      <span
+        id="weather-header-text"
+        class="text-[11px] sm:text-xs text-slate-500"
+      >
+        <!-- Akan diisi JS: 天気：☀ 晴れ 12℃ -->
+      </span>
+    </div>
+
+    <span class="text-[10px] sm:text-xs text-slate-400">
+     @生産技術
     </span>
   </div>
-
-  <span class="text-slate-400">@生産技術</span>
-</div>
+</header>
 
     </header>
 
