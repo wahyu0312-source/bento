@@ -2,313 +2,339 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>TSH 弁当注文</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0ea5e9" />
-  <link rel="manifest" href="manifest.json" />
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="min-h-screen bg-gradient-to-br from-sky-50 via-white to-orange-50 text-slate-800">
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+  <title>TSH 弁当注文</title>
+  <meta name="description" content="社員向け日替わり弁当の注文システム" />
 
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- PWA / Icons (sesuaikan kalau perlu) -->
+  <link rel="icon" type="image/png" href="./tsh.png" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <link rel="manifest" href="./manifest.json" />
+</head>
+<body class="min-h-screen bg-gradient-to-b from-sky-50 to-orange-50/40">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
     <!-- Header -->
-    <header class="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between mb-6 sm:mb-8">
+    <header class="flex items-center justify-between gap-4 mb-6 sm:mb-8">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white shadow-md shadow-sky-100 border border-sky-100 flex items-center justify-center overflow-hidden">
-          <!-- Logo TSH (upload ke: frontend/icons/tsh.png) -->
-          <img src="icons/tsh.png" alt="TSH ロゴ" class="w-full h-full object-contain">
+        <div class="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center">
+          <img src="./tsh.png" alt="TSH" class="w-8 h-8 object-contain" />
         </div>
         <div>
-          <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight text-sky-900">
+          <h1 class="text-lg sm:text-2xl font-semibold text-sky-900">
             TSH 弁当注文
           </h1>
-          <p class="text-xs sm:text-sm text-slate-500 mt-1">
+          <p class="text-xs sm:text-sm text-slate-500">
             社員向け日替わり弁当の注文
           </p>
         </div>
       </div>
-      <div class="flex flex-col items-end gap-1 text-[11px] sm:text-xs text-slate-500">
-        <div class="flex flex-wrap gap-2">
-          <span class="px-2 py-1 rounded-full bg-sky-100 text-sky-700 border border-sky-200">
+      <div class="flex flex-col items-end gap-1 text-[11px] sm:text-xs">
+        <div class="flex flex-wrap justify-end gap-1.5">
+          <span class="px-3 py-1 rounded-full bg-sky-50 text-sky-600 border border-sky-100">
             モバイル最適化
           </span>
-          <span class="px-2 py-1 rounded-full bg-orange-100 text-orange-700 border border-orange-200">
+          <span class="px-3 py-1 rounded-full bg-orange-50 text-orange-600 border border-orange-100">
             Windows / Android インストール可
           </span>
         </div>
-        <span class="text-[11px] mt-1">
-          <span class="font-semibold text-sky-700">Design by wahyu</span>
-        </span>
+        <span class="text-slate-400">Design by wahyu</span>
       </div>
     </header>
 
     <!-- Tabs -->
-    <div class="mb-4 sm:mb-6">
-      <div class="inline-flex rounded-full bg-sky-100 p-1 border border-sky-200">
-        <button id="tab-order"
-          class="tab-btn px-3 sm:px-5 py-2 text-xs sm:text-sm rounded-full font-medium bg-white text-sky-900 border border-sky-300 shadow-sm">
-          注文フォーム
-        </button>
-        <button id="tab-dashboard"
-          class="tab-btn px-3 sm:px-5 py-2 text-xs sm:text-sm rounded-full font-medium text-slate-500 hover:text-sky-900 hover:bg-white/70">
-          ダッシュボード
-        </button>
-      </div>
+    <div class="inline-flex rounded-2xl bg-sky-50/70 border border-sky-100 p-1 mb-5 sm:mb-6">
+      <button
+        id="tab-order"
+        type="button"
+        class="px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm rounded-xl bg-white text-sky-900 border border-sky-300 shadow-sm"
+      >
+        注文フォーム
+      </button>
+      <button
+        id="tab-dashboard"
+        type="button"
+        class="px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm rounded-xl text-slate-500 hover:text-sky-800"
+      >
+        ダッシュボード
+      </button>
     </div>
 
-    <!-- Main content -->
-    <main class="space-y-6 sm:space-y-8">
-
-      <!-- Order Section -->
-     <section id="order-section" class="mt-6">
-  <div class="rounded-3xl bg-white/90 border border-sky-100 shadow-sm p-5 sm:p-6">
-    <div class="flex items-center gap-2 mb-4">
-      <div class="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center text-sky-600 text-sm">
-        🍱
-      </div>
-      <div>
-        <h2 class="text-sm sm:text-base font-semibold text-sky-900">弁当注文フォーム</h2>
-        <p class="text-[11px] text-slate-500 mt-0.5">社員用の日替わり弁当をここから注文できます。</p>
-      </div>
-      <div class="ml-auto hidden sm:block text-[11px] text-slate-400">
-        締切：当日 09:30 まで
-      </div>
-    </div>
-
-    <form id="order-form" class="space-y-4">
-      <!-- 日付 -->
-      <div class="space-y-1">
-        <label for="order-date" class="block text-xs sm:text-sm text-slate-600">
-          日付（受け取り日）
-        </label>
-        <div class="relative">
-          <input
-            id="order-date"
-            type="date"
-            class="w-full rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400" />
-          <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400">
-            📅
-          </span>
-        </div>
-      </div>
-
-      <!-- 社員名 + search -->
-      <div class="space-y-1">
-        <label class="block text-xs sm:text-sm text-slate-600">
-          社員名
-        </label>
-        <input
-          id="employee-search"
-          type="text"
-          placeholder="社員名・部署で検索"
-          class="w-full mb-2 rounded-xl border border-sky-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400" />
-        <select
-          id="employee-name"
-          class="w-full rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400">
-        </select>
-        <p class="text-[11px] text-slate-500 mt-1">
-          社員マスタに登録されていない場合は社員マスタ用シートで追加してください。
-        </p>
-      </div>
-
-      <!-- ラジオボタン: 注文する / 注文しない -->
-      <div class="space-y-1">
-        <label class="block text-xs sm:text-sm text-slate-600">
-          弁当を注文しますか？
-        </label>
-        <div class="grid grid-cols-2 gap-2 text-sm">
-          <label class="flex items-center justify-center gap-2 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 cursor-pointer hover:border-sky-400">
-            <input type="radio" name="order-status" value="order" class="hidden" checked />
-            <span class="inline-flex h-4 w-4 items-center justify-center rounded-full border border-sky-400 bg-white">
-              <span class="h-2.5 w-2.5 rounded-full bg-sky-500"></span>
-            </span>
-            <span class="text-sky-800 text-xs sm:text-sm">注文する</span>
-          </label>
-          <label class="flex items-center justify-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-3 py-2 cursor-pointer hover:border-orange-400">
-            <input type="radio" name="order-status" value="noOrder" class="hidden" />
-            <span class="inline-flex h-4 w-4 items-center justify-center rounded-full border border-orange-400 bg-white">
-              <span class="h-2.5 w-2.5 rounded-full bg-orange-500 opacity-80"></span>
-            </span>
-            <span class="text-orange-800 text-xs sm:text-sm">注文しない</span>
-          </label>
-        </div>
-      </div>
-
-      <!-- メッセージ + 送信ボタン -->
-      <div class="flex flex-col sm:flex-row sm:items-center gap-3 pt-2">
-        <p id="form-message" class="text-xs text-slate-500 flex-1"></p>
-        <button
-          type="submit"
-          class="inline-flex items-center justify-center rounded-xl bg-sky-500 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-600">
-          送信する
-        </button>
-      </div>
-    </form>
-  </div>
-</section>
-
-      <!-- Dashboard Section -->
-      <section id="dashboard-section" class="hidden space-y-4 sm:space-y-6">
-        <!-- Filter + download buttons -->
-        <div class="bg-white border border-sky-100 rounded-2xl p-4 sm:p-5 shadow-sm shadow-sky-100 space-y-3">
-          <div class="flex flex-col sm:flex-row gap-3 sm:items-end justify-between">
-            <div class="space-y-1">
-              <label class="block text-xs sm:text-sm text-slate-600">
-                集計対象日
-              </label>
-              <input
-                type="date"
-                id="dashboard-date"
-                class="w-full sm:w-auto rounded-xl bg-sky-50 border border-sky-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-              />
-            </div>
-            <div class="space-y-1">
-              <label class="block text-xs sm:text-sm text-slate-600">
-                月間集計（yyyy-MM）
-              </label>
-              <input
-                type="month"
-                id="dashboard-month"
-                class="w-full sm:w-auto rounded-xl bg-sky-50 border border-sky-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-              />
-            </div>
-            <button
-              id="btn-refresh-dashboard"
-              class="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-sky-600 hover:bg-sky-500 text-xs sm:text-sm font-semibold px-4 py-2 text-white shadow-sm shadow-sky-200">
-              更新
-            </button>
-          </div>
-
-          <div class="flex flex-wrap gap-2 text-[11px] sm:text-xs">
-            <button id="btn-download-day"
-              class="inline-flex items-center gap-1 rounded-full border border-sky-200 bg-sky-50 hover:bg-sky-100 px-3 py-1">
-              日次Excelダウンロード
-            </button>
-            <button id="btn-download-week"
-              class="inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-50 hover:bg-orange-100 px-3 py-1">
-              週次Excelダウンロード
-            </button>
-            <button id="btn-download-month"
-              class="inline-flex items-center gap-1 rounded-full border border-sky-200 bg-sky-50 hover:bg-sky-100 px-3 py-1">
-              月次Excelダウンロード
-            </button>
-          </div>
-        </div>
-
-        <!-- Today summary -->
-        <div
-          class="bg-white border border-sky-100 rounded-2xl p-4 sm:p-5 shadow-sm shadow-sky-100 space-y-3 sm:space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <h2 class="text-base sm:text-lg font-semibold text-sky-900">
-              本日の注文状況
+    <!-- ====== ORDER SECTION ====== -->
+    <section id="order-section" class="space-y-5 sm:space-y-6">
+      <!-- Today Menu Card -->
+      <div class="rounded-3xl bg-white/80 border border-sky-100 shadow-sm p-5 sm:p-6">
+        <div class="flex items-baseline justify-between gap-2 mb-2">
+          <div class="flex items-center gap-2">
+            <h2 class="text-sm sm:text-base font-semibold text-sky-900">
+              本日のメニュー
             </h2>
-            <span id="dashboard-date-label" class="text-xs sm:text-sm text-slate-500"></span>
-          </div>
-
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs sm:text-sm">
-            <div
-              class="rounded-xl bg-sky-50 border border-sky-200 px-3 py-2 sm:px-4 sm:py-3 flex flex-col gap-1">
-              <span class="text-slate-500">注文数</span>
-              <span id="day-total-count" class="text-lg sm:text-xl font-semibold text-sky-900"></span>
-            </div>
-            <div
-              class="rounded-xl bg-orange-50 border border-orange-200 px-3 py-2 sm:px-4 sm:py-3 flex flex-col gap-1">
-              <span class="text-slate-500">合計金額</span>
-              <span id="day-total-amount" class="text-lg sm:text-xl font-semibold text-orange-700"></span>
-            </div>
-          </div>
-
-          <div class="mt-2">
-            <h3 class="text-xs sm:text-sm text-slate-600 mb-2">社員別ステータス</h3>
-            <div class="overflow-x-auto text-xs sm:text-sm">
-              <table class="min-w-full border-collapse">
-                <thead>
-                  <tr class="border-b border-sky-100 text-slate-500">
-                    <th class="text-left py-1 pr-4">社員名</th>
-                    <th class="text-left py-1 pr-4">ステータス</th>
-                    <th class="text-right py-1">小計</th>
-                  </tr>
-                </thead>
-                <tbody id="day-orders-body"></tbody>
-              </table>
-            </div>
+            <span
+              id="today-date-label"
+              class="text-[11px] sm:text-xs text-slate-500"
+            ></span>
           </div>
         </div>
+        <div id="today-menu" class="mt-2 text-sm text-slate-500">
+          読み込み中…
+        </div>
+      </div>
 
-        <!-- Monthly summary -->
-        <div
-          class="bg-white border border-sky-100 rounded-2xl p-4 sm:p-5 shadow-sm shadow-sky-100 space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <h2 class="text-base sm:text-lg font-semibold text-sky-900">
-              月間集計
-            </h2>
-            <span id="dashboard-month-label" class="text-xs sm:text-sm text-slate-500"></span>
-          </div>
-
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs sm:text-sm">
-            <div
-              class="rounded-xl bg-sky-50 border border-sky-200 px-3 py-2 sm:px-4 sm:py-3 flex flex-col gap-1">
-              <span class="text-slate-500">注文数合計</span>
-              <span id="month-total-count" class="text-lg sm:text-xl font-semibold text-sky-900"></span>
+      <!-- Order Form Card -->
+      <section>
+        <div class="rounded-3xl bg-white/90 border border-sky-100 shadow-sm p-5 sm:p-6">
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center text-sky-600 text-sm">
+              🍱
             </div>
-            <div
-              class="rounded-xl bg-orange-50 border border-orange-200 px-3 py-2 sm:px-4 sm:py-3 flex flex-col gap-1">
-              <span class="text-slate-500">金額合計</span>
-              <span id="month-total-amount" class="text-lg sm:text-xl font-semibold text-orange-700"></span>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
-            <!-- per employee -->
             <div>
-              <h3 class="text-xs sm:text-sm text-slate-600 mb-2">社員別集計</h3>
-              <div class="overflow-x-auto">
-                <table class="min-w-full border-collapse">
-                  <thead>
-                    <tr class="border-b border-sky-100 text-slate-500">
-                      <th class="text-left py-1 pr-4">社員名</th>
-                      <th class="text-right py-1 pr-4">注文数</th>
-                      <th class="text-right py-1">合計金額</th>
-                    </tr>
-                  </thead>
-                  <tbody id="month-employee-body"></tbody>
-                </table>
+              <h2 class="text-sm sm:text-base font-semibold text-sky-900">弁当注文フォーム</h2>
+              <p class="text-[11px] text-slate-500 mt-0.5">
+                社員用の日替わり弁当をここから注文できます。
+              </p>
+            </div>
+            <div class="ml-auto hidden sm:block text-[11px] text-slate-400">
+              締切：当日 09:30 まで
+            </div>
+          </div>
+
+          <form id="order-form" class="space-y-4">
+            <!-- 日付 -->
+            <div class="space-y-1">
+              <label for="order-date" class="block text-xs sm:text-sm text-slate-600">
+                日付（受け取り日）
+              </label>
+              <div class="relative">
+                <input
+                  id="order-date"
+                  type="date"
+                  class="w-full rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+                />
+                <span
+                  class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400"
+                >
+                  📅
+                </span>
               </div>
             </div>
 
-            <!-- per day -->
-            <div>
-              <h3 class="text-xs sm:text-sm text-slate-600 mb-2">日別集計</h3>
-              <div class="overflow-x-auto">
-                <table class="min-w-full border-collapse">
-                  <thead>
-                    <tr class="border-b border-sky-100 text-slate-500">
-                      <th class="text-left py-1 pr-4">日付</th>
-                      <th class="text-right py-1 pr-4">注文数</th>
-                      <th class="text-right py-1">合計金額</th>
-                    </tr>
-                  </thead>
-                  <tbody id="month-day-body"></tbody>
-                </table>
+            <!-- 社員名 + search -->
+            <div class="space-y-1">
+              <label class="block text-xs sm:text-sm text-slate-600">
+                社員名
+              </label>
+              <input
+                id="employee-search"
+                type="text"
+                placeholder="社員名・部署で検索"
+                class="w-full mb-2 rounded-xl border border-sky-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+              />
+              <select
+                id="employee-name"
+                class="w-full rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+              >
+                <!-- options via JS -->
+              </select>
+              <p class="text-[11px] text-slate-500 mt-1">
+                社員マスタに登録されていない場合は社員マスタ用シートで追加してください。
+              </p>
+            </div>
+
+            <!-- ラジオ: 注文する / 注文しない -->
+            <div class="space-y-1">
+              <label class="block text-xs sm:text-sm text-slate-600">
+                弁当を注文しますか？
+              </label>
+              <div class="grid grid-cols-2 gap-2 text-sm">
+                <label
+                  class="group flex items-center justify-center gap-2 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 cursor-pointer hover:border-sky-400 transition"
+                >
+                  <input type="radio" name="order-status" value="order" class="hidden" checked />
+                  <span
+                    class="inline-flex h-4 w-4 items-center justify-center rounded-full border border-sky-400 bg-white"
+                  >
+                    <span class="h-2.5 w-2.5 rounded-full bg-sky-500"></span>
+                  </span>
+                  <span class="text-sky-800 text-xs sm:text-sm">注文する</span>
+                </label>
+
+                <label
+                  class="group flex items-center justify-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-3 py-2 cursor-pointer hover:border-orange-400 transition"
+                >
+                  <input type="radio" name="order-status" value="noOrder" class="hidden" />
+                  <span
+                    class="inline-flex h-4 w-4 items-center justify-center rounded-full border border-orange-400 bg-white"
+                  >
+                    <span class="h-2.5 w-2.5 rounded-full bg-orange-500 opacity-80"></span>
+                  </span>
+                  <span class="text-orange-800 text-xs sm:text-sm">注文しない</span>
+                </label>
               </div>
             </div>
-          </div>
-        </div>
 
+            <!-- メッセージ + ボタン -->
+            <div class="flex flex-col sm:flex-row sm:items-center gap-3 pt-2">
+              <p id="form-message" class="text-xs text-slate-500 flex-1"></p>
+              <button
+                type="submit"
+                class="inline-flex items-center justify-center rounded-xl bg-sky-500 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-600"
+              >
+                送信する
+              </button>
+            </div>
+          </form>
+        </div>
       </section>
-    </main>
+    </section>
+
+    <!-- ====== DASHBOARD SECTION ====== -->
+    <section id="dashboard-section" class="space-y-5 sm:space-y-6 hidden">
+      <!-- Filter + Download -->
+      <div class="rounded-3xl bg-white/90 border border-sky-100 shadow-sm p-5 sm:p-6 space-y-4">
+        <div class="flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <h2 class="text-sm sm:text-base font-semibold text-sky-900">ダッシュボード</h2>
+            <p class="text-[11px] text-slate-500 mt-1">
+              日次・月次・社員別の集計を表示します。
+            </p>
+          </div>
+          <button
+            id="btn-refresh-dashboard"
+            class="px-3 py-1.5 rounded-xl bg-sky-500 text-xs sm:text-sm text-white font-semibold hover:bg-sky-600"
+          >
+            集計を更新
+          </button>
+        </div>
+
+        <div class="grid sm:grid-cols-3 gap-4">
+          <div>
+            <label for="dashboard-date" class="block text-xs sm:text-sm text-slate-600 mb-1">
+              日付
+            </label>
+            <input
+              id="dashboard-date"
+              type="date"
+              class="w-full rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+            />
+          </div>
+          <div>
+            <label for="dashboard-month" class="block text-xs sm:text-sm text-slate-600 mb-1">
+              対象月
+            </label>
+            <input
+              id="dashboard-month"
+              type="month"
+              class="w-full rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+            />
+          </div>
+          <div class="flex items-end">
+            <div class="text-[11px] text-slate-500 leading-relaxed">
+              日次: <span id="dashboard-date-label"></span><br />
+              月次: <span id="dashboard-month-label"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 text-xs pt-1">
+          <button
+            id="btn-download-day"
+            class="px-3 py-1.5 rounded-xl border border-sky-200 bg-sky-50 text-sky-700 hover:bg-sky-100"
+          >
+            日次CSV
+          </button>
+          <button
+            id="btn-download-week"
+            class="px-3 py-1.5 rounded-xl border border-sky-200 bg-sky-50 text-sky-700 hover:bg-sky-100"
+          >
+            週次CSV
+          </button>
+          <button
+            id="btn-download-month"
+            class="px-3 py-1.5 rounded-xl border border-sky-200 bg-sky-50 text-sky-700 hover:bg-sky-100"
+          >
+            月次CSV
+          </button>
+        </div>
+      </div>
+
+      <!-- Day & Month Cards -->
+      <div class="grid lg:grid-cols-2 gap-5">
+        <!-- Day Summary -->
+        <div class="rounded-3xl bg-white/90 border border-sky-100 shadow-sm p-5 sm:p-6">
+          <h3 class="text-sm sm:text-base font-semibold text-sky-900 mb-3">日次集計</h3>
+          <div class="flex items-baseline justify-between text-xs sm:text-sm mb-3">
+            <span>合計件数: <span id="day-total-count">-</span></span>
+            <span>合計金額: <span id="day-total-amount">-</span></span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-xs">
+              <thead class="bg-sky-50 text-slate-600">
+                <tr>
+                  <th class="text-left px-2 py-1">社員名</th>
+                  <th class="text-left px-2 py-1">ステータス</th>
+                  <th class="text-right px-2 py-1">小計</th>
+                </tr>
+              </thead>
+              <tbody id="day-orders-body" class="text-slate-700 text-[11px] sm:text-xs"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Month Summary -->
+        <div class="rounded-3xl bg-white/90 border border-sky-100 shadow-sm p-5 sm:p-6">
+          <h3 class="text-sm sm:text-base font-semibold text-sky-900 mb-3">月次集計</h3>
+          <div class="flex items-baseline justify-between text-xs sm:text-sm mb-3">
+            <span>合計件数: <span id="month-total-count">-</span></span>
+            <span>合計金額: <span id="month-total-amount">-</span></span>
+          </div>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <h4 class="text-xs font-semibold text-slate-600 mb-1">社員別</h4>
+              <div class="overflow-x-auto">
+                <table class="min-w-full text-xs">
+                  <thead class="bg-sky-50 text-slate-600">
+                    <tr>
+                      <th class="text-left px-2 py-1">社員名</th>
+                      <th class="text-right px-2 py-1">件数</th>
+                      <th class="text-right px-2 py-1">合計金額</th>
+                    </tr>
+                  </thead>
+                  <tbody id="month-employee-body" class="text-[11px] sm:text-xs text-slate-700"></tbody>
+                </table>
+              </div>
+            </div>
+            <div>
+              <h4 class="text-xs font-semibold text-slate-600 mb-1">日別</h4>
+              <div class="overflow-x-auto">
+                <table class="min-w-full text-xs">
+                  <thead class="bg-sky-50 text-slate-600">
+                    <tr>
+                      <th class="text-left px-2 py-1">日付</th>
+                      <th class="text-right px-2 py-1">件数</th>
+                      <th class="text-right px-2 py-1">合計金額</th>
+                    </tr>
+                  </thead>
+                  <tbody id="month-day-body" class="text-[11px] sm:text-xs text-slate-700"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- Footer -->
-    <footer class="mt-8 text-center text-[11px] sm:text-xs text-slate-500">
-      <div class="flex items-center justify-center gap-2 mb-1">
-        <img src="icons/tsh.png" alt="TSH ロゴ" class="w-5 h-5 object-contain">
-        <span class="font-semibold text-sky-800">TSH 弁当注文</span>
+    <footer class="mt-8 sm:mt-10 text-center text-[11px] text-slate-400 space-y-1">
+      <div class="inline-flex items-center gap-1">
+        <img src="./tsh.png" alt="TSH" class="w-4 h-4 rounded-sm" />
+        <span>TSH 弁当注文</span>
       </div>
       <div>Design by wahyu</div>
     </footer>
-
   </div>
 
-  <script src="app.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>
