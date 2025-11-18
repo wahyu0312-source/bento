@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TSH 弁当注文</title>
-  <meta name="description" content="社員向け日替わり弁当の注文システム" />
+  <meta name="description" content="社員向け弁当の注文システム" />
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -13,24 +13,26 @@
   <link rel="icon" type="image/png" href="./tsh.png" />
   <link rel="apple-touch-icon" href="./icon-192.png" />
   <link rel="manifest" href="./manifest.json" />
-  <style>
-  /* text berjalan di bawah radio */
-  .marquee {
-    white-space: nowrap;
-    display: inline-block;
-    animation: marquee 18s linear infinite;
-  }
-  .marquee:hover {
-    animation-play-state: paused; /* bisa di-pause kalau di-hover */
-  }
-  @keyframes marquee {
-    0%   { transform: translateX(100%); }
-    100% { transform: translateX(-100%); }
-  }
-</style>
 
+  <style>
+    /* text berjalan di bawah radio */
+    .marquee {
+      white-space: nowrap;
+      display: inline-block;
+      animation: marquee 18s linear infinite;
+    }
+    .marquee:hover {
+      animation-play-state: paused; /* bisa di-pause kalau di-hover */
+    }
+    @keyframes marquee {
+      0%   { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+  </style>
 </head>
-<body class="min-h-screen bg-gradient-to-b from-sky-50 to-orange-50/40">
+
+<!-- tambah text-sm sm:text-base supaya semua font sedikit lebih besar -->
+<body class="min-h-screen bg-gradient-to-b from-sky-50 to-orange-50/40 text-sm sm:text-base">
   <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
     <!-- Header -->
     <header class="flex items-center justify-between gap-4 mb-6 sm:mb-8">
@@ -39,7 +41,7 @@
           <img src="./tsh.png" alt="TSH" class="w-8 h-8 object-contain" />
         </div>
         <div>
-          <h1 class="text-lg sm:text-2xl font-semibold text-sky-900">
+          <h1 class="text-xl sm:text-2xl font-semibold text-sky-900">
             TSH 弁当注文
           </h1>
           <p class="text-xs sm:text-sm text-slate-500">
@@ -158,61 +160,68 @@
               </p>
             </div>
 
-            <!-- ラジオ: 注文する / 注文しない -->
-            <!-- ラジオ: 注文する / 注文しない -->
-<div class="space-y-1">
-  <label class="block text-xs sm:text-sm text-slate-600">
-    弁当を注文しますか？
-  </label>
+            <!-- ラジオ: 注文する / 注文しない + TEXT BERJALAN -->
+            <div class="space-y-2">
+              <label class="block text-xs sm:text-sm text-slate-600">
+                弁当を注文しますか？
+              </label>
 
-  <div class="grid grid-cols-2 gap-2 text-sm">
-    <!-- 注文する -->
-    <label class="block cursor-pointer">
-      <input
-        type="radio"
-        name="order-status"
-        value="order"
-        class="peer sr-only"
-        checked
-      />
-      <div
-        class="flex items-center justify-center gap-2 rounded-xl border px-3 py-2
-               bg-sky-50 border-sky-200 text-sky-700
-               peer-checked:bg-sky-500 peer-checked:text-white peer-checked:border-sky-500"
-      >
-        <span
-          class="inline-flex h-4 w-4 items-center justify-center rounded-full border border-current"
-        >
-          <span class="h-2.5 w-2.5 rounded-full bg-current"></span>
-        </span>
-        <span class="text-xs sm:text-sm">注文する</span>
-      </div>
-    </label>
+              <div class="grid grid-cols-2 gap-2 text-sm">
+                <!-- 注文する -->
+                <label class="block cursor-pointer">
+                  <input
+                    type="radio"
+                    name="order-status"
+                    value="order"
+                    class="peer sr-only"
+                    checked
+                  />
+                  <div
+                    class="flex items-center justify-center gap-2 rounded-xl border px-3 py-2
+                           bg-sky-50 border-sky-200 text-sky-700
+                           peer-checked:bg-sky-500 peer-checked:text-white peer-checked:border-sky-500"
+                  >
+                    <span
+                      class="inline-flex h-4 w-4 items-center justify-center rounded-full border border-current"
+                    >
+                      <span class="h-2.5 w-2.5 rounded-full bg-current"></span>
+                    </span>
+                    <span class="text-xs sm:text-sm">注文する</span>
+                  </div>
+                </label>
 
-    <!-- 注文しない -->
-    <label class="block cursor-pointer">
-      <input
-        type="radio"
-        name="order-status"
-        value="noOrder"
-        class="peer sr-only"
-      />
-      <div
-        class="flex items-center justify-center gap-2 rounded-xl border px-3 py-2
-               bg-orange-50 border-orange-200 text-orange-700
-               peer-checked:bg-orange-500 peer-checked:text-white peer-checked:border-orange-500"
-      >
-        <span
-          class="inline-flex h-4 w-4 items-center justify-center rounded-full border border-current"
-        >
-          <span class="h-2.5 w-2.5 rounded-full bg-current"></span>
-        </span>
-        <span class="text-xs sm:text-sm">注文しない</span>
-      </div>
-    </label>
-  </div>
-</div>
+                <!-- 注文しない -->
+                <label class="block cursor-pointer">
+                  <input
+                    type="radio"
+                    name="order-status"
+                    value="noOrder"
+                    class="peer sr-only"
+                  />
+                  <div
+                    class="flex items-center justify-center gap-2 rounded-xl border px-3 py-2
+                           bg-orange-50 border-orange-200 text-orange-700
+                           peer-checked:bg-orange-500 peer-checked:text-white peer-checked:border-orange-500"
+                  >
+                    <span
+                      class="inline-flex h-4 w-4 items-center justify-center rounded-full border border-current"
+                    >
+                      <span class="h-2.5 w-2.5 rounded-full bg-current"></span>
+                    </span>
+                    <span class="text-xs sm:text-sm">注文しない</span>
+                  </div>
+                </label>
+              </div>
 
+              <!-- TEXT BERJALAN DI SINI -->
+              <div class="mt-1 overflow-hidden rounded-xl bg-sky-50 border border-sky-100">
+                <div class="marquee px-3 py-1.5 text-[11px] sm:text-xs text-sky-700">
+                  本日の締切は <span class="font-semibold">9:30</span> までです。　
+                  注文内容と日付を必ずご確認ください。　
+                  注文しない場合も「注文しない」を選択して送信してください。
+                </div>
+              </div>
+            </div>
 
             <!-- メッセージ + ボタン -->
             <div class="flex flex-col sm:flex-row sm:items-center gap-3 pt-2">
