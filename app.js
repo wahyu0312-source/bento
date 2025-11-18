@@ -103,11 +103,16 @@ async function apiGet(params) {
 async function apiPost(data) {
   const res = await fetch(API_BASE_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    // JANGAN pakai 'application/json' supaya tidak ada preflight CORS
+    headers: {
+      'Content-Type': 'text/plain;charset=utf-8',
+    },
     body: JSON.stringify(data),
   });
+
   return res.json();
 }
+
 
 // ====== DOM refs ======
 const todayHeaderText = document.getElementById('today-header-text');
