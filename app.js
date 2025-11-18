@@ -200,10 +200,44 @@ function loadWeather() {
   if (!weatherHeaderText) return;
 
   // --- fallback kalau belum pakai API sungguhan ---
+ async function loadWeather() {
+  // kalau elemen header tidak ada, langsung keluar
+  if (!weatherHeaderText) return;
+
+  // Fallback: kalau belum isi API key, pakai teks dummy supaya tetap ada ikon
   if (!WEATHER_API_KEY) {
     weatherHeaderText.textContent = '天気：🌤 くもり時々晴れ';
     return;
   }
+
+  weatherHeaderText.textContent = '天気取得中…';
+
+  try {
+    const url =
+      `https://api.openweathermap.org/data/2.5/weather` +
+      `?q=${encodeURIComponent(WEATHER_CITY)}` +
+      `&lang=ja&units=metric&appid=${WEATHER_API_KEY}`;
+
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error('weather response error: ' + res.status);
+    }
+
+    const data = await res.json();
+
+    const temp = Math.round(data.main?.temp ?? 0);
+    const wObj = (data.weather && data.weather[0]) ? data.weather[0] : null;
+    const main = wObj?.main ?? '';
+    const desc = wObj?.description ?? '';
+    const emoji = weatherEmojiFromMain(main);
+
+    weatherHeaderText.textContent = `天気：${emoji} ${desc} ${temp}℃`;
+  } catch (err) {
+    console.error('weather error', err);
+    weatherHeaderText.textContent = '天気情報取得エラー';
+  }
+}
+
   // -----------------------------------------------
 
   weatherHeaderText.textContent = '天気取得中…';
