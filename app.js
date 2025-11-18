@@ -118,6 +118,26 @@ const btnDownloadDay = document.getElementById("btn-download-day");
 const btnDownloadWeek = document.getElementById("btn-download-week");
 const btnDownloadMonth = document.getElementById("btn-download-month");
 
+const multiModeToggle      = document.getElementById('multi-mode-toggle');
+const multiPanel           = document.getElementById('multi-panel');
+const multiMonthInput      = document.getElementById('multi-month');
+const multiDaysContainer   = document.getElementById('multi-days-container');
+const btnGenerateMultiDays = document.getElementById('btn-generate-multi-days');
+const btnSubmitMulti       = document.getElementById('btn-submit-multi');
+const weekdayJa = ['日','月','火','水','木','金','土'];
+
+function getDaysInMonth(ymStr) { // "YYYY-MM"
+  if (!ymStr) return [];
+  const [y, m] = ymStr.split('-').map(Number);
+  const first = new Date(y, m - 1, 1);
+  const days = [];
+  while (first.getMonth() === m - 1) {
+    days.push(new Date(first));
+    first.setDate(first.getDate() + 1);
+  }
+  return days;
+}
+
 // ====== Global cache ======
 let lastDaySummary = null;
 let lastMonthSummary = null;
@@ -166,6 +186,101 @@ function activateTab(name) {
 if (tabOrder) tabOrder.addEventListener("click", () => activateTab("order"));
 if (tabDashboard)
   tabDashboard.addEventListener("click", () => activateTab("dashboard"));
+// ====== 月内複数日一括注文 ======
+if (multiModeToggle && multiPanel) {
+  multiModeToggle.addEventListener('change', () => {
+    if (multiModeToggle.checked) {
+      multiPanel.classList.remove('hidden');
+      if (!multiMonthInput.value) {
+        const t = todayStr();
+        multiMonthInput.value = t.slice(0, 7); // yyyy-MM
+      }
+    } else {
+      multiPanel.classList.add('hidden');
+    }
+  });
+}
+
+if (btnGenerateMultiDays && multiDaysContainer && multiMonthInput) {
+  btnGenerateMultiDays.addEventListener('click', () => {
+    const ym = multiMonthInput.value;
+    if (!ym) {
+      alert('対象月を選択してください。');
+      return;
+    }
+    const days = getDaysInMonth(ym);
+    if (!days.length) return;
+
+    const today = todayStr();
+
+    let html = '<div class="grid grid-cols-3 sm:grid-cols-4 gap-1.5">';
+    days.forEach(d => {
+      const ds = toDateStr(d);
+      const w  = weekdayJa[d.getDay()];
+      const isToday = ds === today;
+      html += `
+        <label class="flex items-center gap-1 rounded-lg px-2 py-1
+                      ${isToday ? 'bg-orange-100 border border-orange-200' : 'bg-white/70 border border-sky-100'}">
+          <input type="checkbox" class="multi-day-checkbox rounded border-slate-300" value="${ds}">
+          <span class="flex-1 truncate">${ds}（${w}）</span>
+        </label>
+      `;
+    });
+    html += '</div>';
+    multiDaysContainer.innerHTML = html;
+  });
+}
+
+if (btnSubmitMulti) {
+  btnSubmitMulti.addEventListener('click', async () => {
+    const employeeName = employeeSelect.value;
+    const status = document.querySelector('input[name="order-status"]:checked')?.value;
+
+    if (!employeeName) {
+      formMessage.textContent = '社員名を選択してください。';
+      return;
+    }
+
+    const checkboxes = multiDaysContainer?.querySelectorAll('.multi-day-checkbox');
+    const selected = [];
+    checkboxes?.forEach(cb => {
+      if (cb.checked) selected.push(cb.value);
+    });
+
+    if (!selected.length) {
+      formMessage.textContent = '日付を1つ以上選択してください。';
+      return;
+    }
+
+    formMessage.textContent = '一括登録中…';
+
+    try {
+      await Promise.all(
+        selected.map(dateStr =>
+          apiPost({
+            action: 'saveOrder',
+            date: dateStr,
+            employeeName,
+            status
+          })
+        )
+      );
+
+      const lastDate = selected[selected.length - 1];
+      formMessage.textContent = `${selected.length} 日分の注文を保存しました。`;
+
+      dashboardDateInput.value = lastDate;
+      dashboardMonthInput.value = monthStrFromDateStr(lastDate);
+      await Promise.all([
+        loadDaySummary(lastDate),
+        loadMonthSummary(dashboardMonthInput.value)
+      ]);
+    } catch (err) {
+      console.error(err);
+      formMessage.textContent = '一括登録中にエラーが発生しました。';
+    }
+  });
+}
 
 // ====== Employees (load + search) ======
 async function loadEmployees() {
@@ -666,19 +781,19 @@ if (btnDownloadMonth) {
 // ====== Init ======
 async function init() {
   const today = todayStr();
-  if (orderDateInput) orderDateInput.value = today;
-  if (dashboardDateInput) dashboardDateInput.value = today;
-  if (dashboardMonthInput)
-    dashboardMonthInput.value = monthStrFromDateStr(today);
+  orderDateInput.value = today;
+  dashboardDateInput.value = today;
+  dashboardMonthInput.value = monthStrFromDateStr(today);
+  if (multiMonthInput) multiMonthInput.value = today.slice(0, 7);
 
   await loadEmployees();
   await loadMenuForDate(today);
   await Promise.all([
     loadDaySummary(today),
-    loadMonthSummary(monthStrFromDateStr(today)),
+    loadMonthSummary(monthStrFromDateStr(today))
   ]);
-  activateTab("order");
 }
+
 
 // PWA: register service worker
 if ("serviceWorker" in navigator) {
