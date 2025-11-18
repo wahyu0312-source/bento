@@ -125,6 +125,12 @@ const multiDaysContainer   = document.getElementById('multi-days-container');
 const btnGenerateMultiDays = document.getElementById('btn-generate-multi-days');
 const btnSubmitMulti       = document.getElementById('btn-submit-multi');
 const weekdayJa = ['日','月','火','水','木','金','土'];
+const summaryEmployeeSelect   = document.getElementById('summary-employee');
+const summaryMonthInput       = document.getElementById('summary-month');
+const btnLoadEmployeeSummary  = document.getElementById('btn-load-employee-summary');
+const btnDownloadEmpExcel     = document.getElementById('btn-download-employee-excel');
+const btnDownloadEmpPdf       = document.getElementById('btn-download-employee-pdf');
+const employeeSummaryView     = document.getElementById('employee-summary-view');
 
 function getDaysInMonth(ymStr) { // "YYYY-MM"
   if (!ymStr) return [];
@@ -143,6 +149,7 @@ let lastDaySummary = null;
 let lastMonthSummary = null;
 let allEmployees = [];
 let heroTimer = null;
+let lastEmployeeSummary = null;
 
 // ====== Tabs ======
 function activateTab(name) {
@@ -299,7 +306,8 @@ async function loadEmployees() {
       })
       .filter((e) => e.name);
 
-    renderEmployeeOptions("");
+    renderEmployeeOptions('');
+  renderSummaryEmployeeOptions();
   } catch (err) {
     console.error(err);
     employeeSelect.innerHTML = "";
@@ -308,6 +316,144 @@ async function loadEmployees() {
     opt.textContent = "社員リスト取得エラー";
     employeeSelect.appendChild(opt);
   }
+}
+function renderSummaryEmployeeOptions() {
+  if (!summaryEmployeeSelect) return;
+  summaryEmployeeSelect.innerHTML = '';
+  const opt0 = document.createElement('option');
+  opt0.value = '';
+  opt0.textContent = '社員を選択';
+  summaryEmployeeSelect.appendChild(opt0);
+
+  allEmployees.forEach(e => {
+    const opt = document.createElement('option');
+    opt.value = e.name;
+    opt.textContent = e.dept ? `${e.name}（${e.dept}）` : e.name;
+    summaryEmployeeSelect.appendChild(opt);
+  });
+}
+async function loadEmployeeSummary(empName, monthStr) {
+  if (!employeeSummaryView) return;
+  employeeSummaryView.textContent = '読み込み中…';
+
+  try {
+    const data = await apiGet({
+      action: 'getEmployeeSummary',
+      employee: empName,
+      month: monthStr
+    });
+    lastEmployeeSummary = data;
+
+    if (!data.orders || data.orders.length === 0) {
+      employeeSummaryView.innerHTML = `
+        <p class="text-[11px] sm:text-xs text-slate-500">
+          対象データがありません。（社員名：${empName} / 月：${monthStr}）
+        </p>
+      `;
+      return;
+    }
+
+    let html = `
+      <div class="mb-2">
+        <div class="text-sm sm:text-base font-semibold text-sky-900">
+          ${empName}
+        </div>
+        <div class="text-[11px] sm:text-xs text-slate-500">
+          対象月：${monthStr}　
+          注文数：${data.totalCount || 0} 件　
+          合計金額：${formatJPY(data.totalAmount || 0)}
+        </div>
+      </div>
+      <div class="overflow-x-auto rounded-2xl border border-sky-100 bg-sky-50/60">
+        <table class="min-w-full text-[11px] sm:text-xs">
+          <thead class="bg-sky-100 text-slate-600">
+            <tr>
+              <th class="text-left px-2 py-1.5">日付</th>
+              <th class="text-left px-2 py-1.5">ステータス</th>
+              <th class="text-right px-2 py-1.5">単価</th>
+              <th class="text-right px-2 py-1.5">小計</th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+    data.orders.forEach(o => {
+      html += `
+        <tr class="border-t border-sky-100">
+          <td class="px-2 py-1.5">${o.date}</td>
+          <td class="px-2 py-1.5">${o.status}</td>
+          <td class="px-2 py-1.5 text-right">${formatJPY(o.unitPrice || 0)}</td>
+          <td class="px-2 py-1.5 text-right">${formatJPY(o.subTotal || 0)}</td>
+        </tr>
+      `;
+    });
+    html += `
+          </tbody>
+        </table>
+      </div>
+    `;
+    employeeSummaryView.innerHTML = html;
+  } catch (err) {
+    console.error(err);
+    employeeSummaryView.textContent = '読込エラーが発生しました。';
+  }
+}
+if (btnLoadEmployeeSummary) {
+  btnLoadEmployeeSummary.addEventListener('click', () => {
+    const emp = summaryEmployeeSelect.value;
+    const m   = summaryMonthInput.value;
+    if (!emp || !m) {
+      alert('社員名と対象月を選択してください。');
+      return;
+    }
+    loadEmployeeSummary(emp, m);
+  });
+}
+if (btnDownloadEmpExcel) {
+  btnDownloadEmpExcel.addEventListener('click', () => {
+    if (!lastEmployeeSummary) {
+      alert('まず社員別サマリーを表示してください。');
+      return;
+    }
+    const s = lastEmployeeSummary;
+    const rows = [];
+    rows.push(['社員名', s.employee || '']);
+    rows.push(['対象月', s.month || '']);
+    rows.push([]);
+    rows.push(['日付', 'ステータス', '単価', '小計']);
+    (s.orders || []).forEach(o => {
+      rows.push([o.date, o.status, o.unitPrice || 0, o.subTotal || 0]);
+    });
+    rows.push([]);
+    rows.push(['注文数合計', s.totalCount || 0]);
+    rows.push(['金額合計', s.totalAmount || 0]);
+
+    downloadCsv(`employee-summary-${s.employee || 'unknown'}-${s.month || ''}.csv`, rows);
+  });
+}
+if (btnDownloadEmpPdf) {
+  btnDownloadEmpPdf.addEventListener('click', async () => {
+    const emp = summaryEmployeeSelect.value;
+    const m   = summaryMonthInput.value;
+    if (!emp || !m) {
+      alert('社員名と対象月を選択してください。');
+      return;
+    }
+    try {
+      const res = await apiGet({
+        action: 'exportEmployeeSummaryPdf',
+        employee: emp,
+        month: m
+      });
+      if (res && res.pdfUrl) {
+        window.open(res.pdfUrl, '_blank');
+      } else {
+        alert('PDFの作成に失敗しました。');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('PDFの作成中にエラーが発生しました。');
+    }
+  });
 }
 
 function renderEmployeeOptions(filterText) {
