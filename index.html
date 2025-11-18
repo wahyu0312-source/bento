@@ -13,6 +13,22 @@
   <link rel="icon" type="image/png" href="./tsh.png" />
   <link rel="apple-touch-icon" href="./icon-192.png" />
   <link rel="manifest" href="./manifest.json" />
+  <style>
+  /* text berjalan di bawah radio */
+  .marquee {
+    white-space: nowrap;
+    display: inline-block;
+    animation: marquee 18s linear infinite;
+  }
+  .marquee:hover {
+    animation-play-state: paused; /* bisa di-pause kalau di-hover */
+  }
+  @keyframes marquee {
+    0%   { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
+</style>
+
 </head>
 <body class="min-h-screen bg-gradient-to-b from-sky-50 to-orange-50/40">
   <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
