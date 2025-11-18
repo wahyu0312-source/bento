@@ -143,36 +143,60 @@
             </div>
 
             <!-- ラジオ: 注文する / 注文しない -->
-            <div class="space-y-1">
-              <label class="block text-xs sm:text-sm text-slate-600">
-                弁当を注文しますか？
-              </label>
-              <div class="grid grid-cols-2 gap-2 text-sm">
-                <label
-                  class="group flex items-center justify-center gap-2 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 cursor-pointer hover:border-sky-400 transition"
-                >
-                  <input type="radio" name="order-status" value="order" class="hidden" checked />
-                  <span
-                    class="inline-flex h-4 w-4 items-center justify-center rounded-full border border-sky-400 bg-white"
-                  >
-                    <span class="h-2.5 w-2.5 rounded-full bg-sky-500"></span>
-                  </span>
-                  <span class="text-sky-800 text-xs sm:text-sm">注文する</span>
-                </label>
+            <!-- ラジオ: 注文する / 注文しない -->
+<div class="space-y-1">
+  <label class="block text-xs sm:text-sm text-slate-600">
+    弁当を注文しますか？
+  </label>
 
-                <label
-                  class="group flex items-center justify-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-3 py-2 cursor-pointer hover:border-orange-400 transition"
-                >
-                  <input type="radio" name="order-status" value="noOrder" class="hidden" />
-                  <span
-                    class="inline-flex h-4 w-4 items-center justify-center rounded-full border border-orange-400 bg-white"
-                  >
-                    <span class="h-2.5 w-2.5 rounded-full bg-orange-500 opacity-80"></span>
-                  </span>
-                  <span class="text-orange-800 text-xs sm:text-sm">注文しない</span>
-                </label>
-              </div>
-            </div>
+  <div class="grid grid-cols-2 gap-2 text-sm">
+    <!-- 注文する -->
+    <label class="block cursor-pointer">
+      <input
+        type="radio"
+        name="order-status"
+        value="order"
+        class="peer sr-only"
+        checked
+      />
+      <div
+        class="flex items-center justify-center gap-2 rounded-xl border px-3 py-2
+               bg-sky-50 border-sky-200 text-sky-700
+               peer-checked:bg-sky-500 peer-checked:text-white peer-checked:border-sky-500"
+      >
+        <span
+          class="inline-flex h-4 w-4 items-center justify-center rounded-full border border-current"
+        >
+          <span class="h-2.5 w-2.5 rounded-full bg-current"></span>
+        </span>
+        <span class="text-xs sm:text-sm">注文する</span>
+      </div>
+    </label>
+
+    <!-- 注文しない -->
+    <label class="block cursor-pointer">
+      <input
+        type="radio"
+        name="order-status"
+        value="noOrder"
+        class="peer sr-only"
+      />
+      <div
+        class="flex items-center justify-center gap-2 rounded-xl border px-3 py-2
+               bg-orange-50 border-orange-200 text-orange-700
+               peer-checked:bg-orange-500 peer-checked:text-white peer-checked:border-orange-500"
+      >
+        <span
+          class="inline-flex h-4 w-4 items-center justify-center rounded-full border border-current"
+        >
+          <span class="h-2.5 w-2.5 rounded-full bg-current"></span>
+        </span>
+        <span class="text-xs sm:text-sm">注文しない</span>
+      </div>
+    </label>
+  </div>
+</div>
+
 
             <!-- メッセージ + ボタン -->
             <div class="flex flex-col sm:flex-row sm:items-center gap-3 pt-2">
