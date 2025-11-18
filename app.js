@@ -195,12 +195,12 @@ function weatherEmojiFromMain(main) {
     default:             return '🌤';
   }
 }
-// >>> GANTI loadWeather DENGAN INI <<<
+
 async function loadWeather() {
   // kalau elemen header tidak ada, langsung keluar
   if (!weatherHeaderText) return;
 
-  // Fallback: kalau belum isi API key, pakai teks dummy supaya tetap ada ikon
+  // Kalau API key kosong → tampilkan dummy text saja
   if (!WEATHER_API_KEY) {
     weatherHeaderText.textContent = '天気：🌤 くもり時々晴れ';
     return;
@@ -210,7 +210,7 @@ async function loadWeather() {
 
   try {
     const url =
-      `https://api.openweathermap.org/data/2.5/weather` +
+      'https://api.openweathermap.org/data/2.5/weather' +
       `?q=${encodeURIComponent(WEATHER_CITY)}` +
       `&lang=ja&units=metric&appid=${WEATHER_API_KEY}`;
 
@@ -222,9 +222,7 @@ async function loadWeather() {
     const data = await res.json();
 
     const temp = Math.round(data.main?.temp ?? 0);
-    const wObj =
-      Array.isArray(data.weather) && data.weather[0] ? data.weather[0] : null;
-
+    const wObj = (data.weather && data.weather[0]) ? data.weather[0] : null;
     const main = wObj?.main ?? '';
     const desc = wObj?.description ?? '';
     const emoji = weatherEmojiFromMain(main);
@@ -235,6 +233,7 @@ async function loadWeather() {
     weatherHeaderText.textContent = '天気情報取得エラー';
   }
 }
+
 
 
 // ====== Load employees ======
