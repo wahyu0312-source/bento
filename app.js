@@ -1,20 +1,21 @@
 // ====== SETTING ======
-const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwevJsl--6Sy1JRWJzTrlybNRlTvkttpc7xsM03-nOhvhb6pGH2PlP7AHLA8QqwjZmZ/exec';
+const API_BASE_URL =
+  "https://script.google.com/macros/s/AKfycbwevJsl--6Sy1JRWJzTrlybNRlTvkttpc7xsM03-nOhvhb6pGH2PlP7AHLA8QqwjZmZ/exec";
 // =====================
 
 // ====== Utils ======
 function formatJPY(amount) {
-  return new Intl.NumberFormat('ja-JP', {
-    style: 'currency',
-    currency: 'JPY'
+  return new Intl.NumberFormat("ja-JP", {
+    style: "currency",
+    currency: "JPY",
   }).format(amount || 0);
 }
 
 function todayStr() {
   const d = new Date();
   const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
 }
 
@@ -24,8 +25,8 @@ function monthStrFromDateStr(dateStr) {
 
 function toDateStr(d) {
   const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
 }
 
@@ -42,15 +43,15 @@ function getWeekRange(dateStr) {
 
 async function apiGet(params) {
   const url = new URL(API_BASE_URL);
-  Object.keys(params).forEach(k => url.searchParams.append(k, params[k]));
-  const res = await fetch(url.toString(), { method: 'GET' });
+  Object.keys(params).forEach((k) => url.searchParams.append(k, params[k]));
+  const res = await fetch(url.toString(), { method: "GET" });
   return res.json();
 }
 
 async function apiPost(data) {
   const res = await fetch(API_BASE_URL, {
-    method: 'POST',
-    body: JSON.stringify(data)
+    method: "POST",
+    body: JSON.stringify(data),
   });
   return res.json();
 }
@@ -58,22 +59,22 @@ async function apiPost(data) {
 // ====== CSV Helpers ======
 function toCsv(rows) {
   return rows
-    .map(row =>
+    .map((row) =>
       row
-        .map(v => {
-          const s = v == null ? '' : String(v);
+        .map((v) => {
+          const s = v == null ? "" : String(v);
           return `"${s.replace(/"/g, '""')}"`;
         })
-        .join(',')
+        .join(",")
     )
-    .join('\r\n');
+    .join("\r\n");
 }
 
 function downloadCsv(filename, rows) {
   const csvContent = toCsv(rows);
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  const a = document.createElement("a");
   a.href = url;
   a.download = filename;
   document.body.appendChild(a);
@@ -83,96 +84,122 @@ function downloadCsv(filename, rows) {
 }
 
 // ====== DOM refs ======
-const orderSection      = document.getElementById('order-section');
-const dashboardSection  = document.getElementById('dashboard-section');
-const tabOrder          = document.getElementById('tab-order');
-const tabDashboard      = document.getElementById('tab-dashboard');
+const orderSection = document.getElementById("order-section");
+const dashboardSection = document.getElementById("dashboard-section");
+const tabOrder = document.getElementById("tab-order");
+const tabDashboard = document.getElementById("tab-dashboard");
 
-const orderDateInput    = document.getElementById('order-date');
-const employeeSelect    = document.getElementById('employee-name');
-const formMessage       = document.getElementById('form-message');
-const orderForm         = document.getElementById('order-form');
+const orderDateInput = document.getElementById("order-date");
+const employeeSelect = document.getElementById("employee-name");
+const employeeSearchInput = document.getElementById("employee-search");
+const formMessage = document.getElementById("form-message");
+const orderForm = document.getElementById("order-form");
 
-const todayDateLabel    = document.getElementById('today-date-label');
-const todayMenuDiv      = document.getElementById('today-menu');
+const todayDateLabel = document.getElementById("today-date-label");
+const todayMenuDiv = document.getElementById("today-menu");
 
-const dashboardDateInput   = document.getElementById('dashboard-date');
-const dashboardMonthInput  = document.getElementById('dashboard-month');
-const dashboardDateLabel   = document.getElementById('dashboard-date-label');
-const dashboardMonthLabel  = document.getElementById('dashboard-month-label');
+const dashboardDateInput = document.getElementById("dashboard-date");
+const dashboardMonthInput = document.getElementById("dashboard-month");
+const dashboardDateLabel = document.getElementById("dashboard-date-label");
+const dashboardMonthLabel = document.getElementById("dashboard-month-label");
 
-const btnRefreshDashboard  = document.getElementById('btn-refresh-dashboard');
+const btnRefreshDashboard = document.getElementById("btn-refresh-dashboard");
 
-const dayTotalCountEl    = document.getElementById('day-total-count');
-const dayTotalAmountEl   = document.getElementById('day-total-amount');
-const dayOrdersBody      = document.getElementById('day-orders-body');
+const dayTotalCountEl = document.getElementById("day-total-count");
+const dayTotalAmountEl = document.getElementById("day-total-amount");
+const dayOrdersBody = document.getElementById("day-orders-body");
 
-const monthTotalCountEl  = document.getElementById('month-total-count');
-const monthTotalAmountEl = document.getElementById('month-total-amount');
-const monthEmployeeBody  = document.getElementById('month-employee-body');
-const monthDayBody       = document.getElementById('month-day-body');
+const monthTotalCountEl = document.getElementById("month-total-count");
+const monthTotalAmountEl = document.getElementById("month-total-amount");
+const monthEmployeeBody = document.getElementById("month-employee-body");
+const monthDayBody = document.getElementById("month-day-body");
 
-const btnDownloadDay   = document.getElementById('btn-download-day');
-const btnDownloadWeek  = document.getElementById('btn-download-week');
-const btnDownloadMonth = document.getElementById('btn-download-month');
-const employeeSearchInput = document.getElementById('employee-search');
+const btnDownloadDay = document.getElementById("btn-download-day");
+const btnDownloadWeek = document.getElementById("btn-download-week");
+const btnDownloadMonth = document.getElementById("btn-download-month");
 
 // ====== Global cache ======
 let lastDaySummary = null;
 let lastMonthSummary = null;
 let allEmployees = [];
+let heroTimer = null;
 
 // ====== Tabs ======
 function activateTab(name) {
-  if (name === 'order') {
-    orderSection.classList.remove('hidden');
-    dashboardSection.classList.add('hidden');
-    tabOrder.classList.add('bg-white', 'text-sky-900', 'border', 'border-sky-300', 'shadow-sm');
-    tabDashboard.classList.remove('bg-white', 'text-sky-900', 'border', 'border-sky-300', 'shadow-sm');
+  if (name === "order") {
+    orderSection.classList.remove("hidden");
+    dashboardSection.classList.add("hidden");
+    tabOrder.classList.add(
+      "bg-white",
+      "text-sky-900",
+      "border",
+      "border-sky-300",
+      "shadow-sm"
+    );
+    tabDashboard.classList.remove(
+      "bg-white",
+      "text-sky-900",
+      "border",
+      "border-sky-300",
+      "shadow-sm"
+    );
   } else {
-    orderSection.classList.add('hidden');
-    dashboardSection.classList.remove('hidden');
-    tabDashboard.classList.add('bg-white', 'text-sky-900', 'border', 'border-sky-300', 'shadow-sm');
-    tabOrder.classList.remove('bg-white', 'text-sky-900', 'border', 'border-sky-300', 'shadow-sm');
+    orderSection.classList.add("hidden");
+    dashboardSection.classList.remove("hidden");
+    tabDashboard.classList.add(
+      "bg-white",
+      "text-sky-900",
+      "border",
+      "border-sky-300",
+      "shadow-sm"
+    );
+    tabOrder.classList.remove(
+      "bg-white",
+      "text-sky-900",
+      "border",
+      "border-sky-300",
+      "shadow-sm"
+    );
   }
 }
 
-tabOrder.addEventListener('click', () => activateTab('order'));
-tabDashboard.addEventListener('click', () => activateTab('dashboard'));
+if (tabOrder) tabOrder.addEventListener("click", () => activateTab("order"));
+if (tabDashboard)
+  tabDashboard.addEventListener("click", () => activateTab("dashboard"));
 
-// ====== Load employees ======
+// ====== Employees (load + search) ======
 async function loadEmployees() {
   try {
-    const data = await apiGet({ action: 'getEmployees' });
+    const data = await apiGet({ action: "getEmployees" });
 
-    // Normalisasi: support format lama (string) atau baru (object)
-    allEmployees = (data.employees || []).map(emp => {
-      if (typeof emp === 'string') {
-        return { name: emp, dept: '' };
-      }
-      return {
-        name: emp.name || '',
-        dept: emp.dept || emp.department || ''
-      };
-    }).filter(e => e.name);
+    allEmployees = (data.employees || [])
+      .map((emp) => {
+        if (typeof emp === "string") {
+          return { name: emp, dept: "" };
+        }
+        return {
+          name: emp.name || "",
+          dept: emp.dept || emp.department || "",
+        };
+      })
+      .filter((e) => e.name);
 
-    // render pertama tanpa filter
-    renderEmployeeOptions('');
+    renderEmployeeOptions("");
   } catch (err) {
     console.error(err);
-    employeeSelect.innerHTML = '';
-    const opt = document.createElement('option');
-    opt.value = '';
-    opt.textContent = '社員リスト取得エラー';
+    employeeSelect.innerHTML = "";
+    const opt = document.createElement("option");
+    opt.value = "";
+    opt.textContent = "社員リスト取得エラー";
     employeeSelect.appendChild(opt);
   }
 }
 
 function renderEmployeeOptions(filterText) {
-  const keyword = (filterText || '').toLowerCase();
-  employeeSelect.innerHTML = '';
+  const keyword = (filterText || "").toLowerCase();
+  employeeSelect.innerHTML = "";
 
-  const filtered = allEmployees.filter(e => {
+  const filtered = allEmployees.filter((e) => {
     if (!keyword) return true;
     return (
       e.name.toLowerCase().includes(keyword) ||
@@ -181,65 +208,111 @@ function renderEmployeeOptions(filterText) {
   });
 
   if (filtered.length === 0) {
-    const opt = document.createElement('option');
-    opt.value = '';
-    opt.textContent = '該当する社員が見つかりません';
+    const opt = document.createElement("option");
+    opt.value = "";
+    opt.textContent = "該当する社員が見つかりません";
     employeeSelect.appendChild(opt);
     return;
   }
 
-  filtered.forEach(e => {
-    const opt = document.createElement('option');
-    opt.value = e.name; // backend tetap terima nama saja
+  filtered.forEach((e) => {
+    const opt = document.createElement("option");
+    opt.value = e.name;
     opt.textContent = e.dept ? `${e.name}（${e.dept}）` : e.name;
     employeeSelect.appendChild(opt);
   });
 }
 
-// search box
 if (employeeSearchInput) {
-  employeeSearchInput.addEventListener('input', () => {
-    const text = employeeSearchInput.value || '';
+  employeeSearchInput.addEventListener("input", () => {
+    const text = employeeSearchInput.value || "";
     renderEmployeeOptions(text.trim());
   });
 }
 
+// ====== Hero carousel helper ======
+function setupHeroCarousel() {
+  if (heroTimer) {
+    clearInterval(heroTimer);
+    heroTimer = null;
+  }
+  const container = document.getElementById("hero-slides");
+  if (!container) return;
+
+  const slides = Array.from(
+    container.querySelectorAll("[data-slide-index]")
+  );
+  if (slides.length <= 1) {
+    slides.forEach((el) => (el.style.opacity = "1"));
+    return;
+  }
+
+  let index = 0;
+  slides.forEach((el, i) => {
+    el.style.opacity = i === 0 ? "1" : "0";
+  });
+
+  heroTimer = setInterval(() => {
+    index = (index + 1) % slides.length;
+    slides.forEach((el, i) => {
+      el.style.opacity = i === index ? "1" : "0";
+    });
+  }, 4000);
+}
+
 // ====== Menu per date ======
 async function loadMenuForDate(dateStr) {
-  // todayMenuDiv / todayDateLabel bisa null kalau elemen HTML-nya dihapus,
-  // jadi kita cek dulu sebelum dipakai
   if (todayMenuDiv) {
-    todayMenuDiv.textContent = '読み込み中…';
+    todayMenuDiv.textContent = "読み込み中…";
   }
   if (todayDateLabel) {
     todayDateLabel.textContent = `(${dateStr})`;
   }
 
   try {
-    const data = await apiGet({ action: 'getMenu', date: dateStr });
+    const data = await apiGet({ action: "getMenu", date: dateStr });
     const menu = data.menu;
     if (!menu) {
       if (todayMenuDiv) {
-        todayMenuDiv.textContent = 'メニュー未登録';
+        todayMenuDiv.textContent = "メニュー未登録";
       }
     } else {
-      const imgHtml = menu.imageUrl
-        ? `
-          <div class="w-32 sm:w-40 h-24 sm:h-28 rounded-2xl overflow-hidden border border-white/70 shadow-sm bg-white/80 flex-shrink-0">
+      const hasImage = !!menu.imageUrl;
+      const heroHtml = `
+        <div id="hero-slides"
+             class="relative w-32 sm:w-40 h-24 sm:h-28 rounded-2xl overflow-hidden border border-white/70 shadow-sm bg-white/80 flex-shrink-0">
+          ${
+            hasImage
+              ? `
+          <div class="absolute inset-0 transition-opacity duration-700 ease-in-out" data-slide-index="0">
             <img src="${menu.imageUrl}"
                  alt="${menu.name || ''}"
                  class="w-full h-full object-cover" />
           </div>
-        `
-        : `
-          <div class="w-32 sm:w-40 h-24 sm:h-28 rounded-2xl bg-slate-100/60 flex items-center justify-center text-[11px] text-slate-400 flex-shrink-0">
+          <div class="absolute inset-0 transition-opacity duration-700 ease-in-out opacity-0" data-slide-index="1">
+            <img src="./images/food-bg-1.png"
+                 alt="food"
+                 class="w-full h-full object-cover" />
+          </div>
+          <div class="absolute inset-0 transition-opacity duration-700 ease-in-out opacity-0" data-slide-index="2">
+            <img src="./images/food-bg-2.png"
+                 alt="food"
+                 class="w-full h-full object-cover" />
+          </div>
+          `
+              : `
+          <div class="absolute inset-0 flex items-center justify-center text-[11px] text-slate-400">
             画像未登録
           </div>
-        `;
+          `
+          }
+        </div>
+      `;
 
       if (todayMenuDiv) {
         todayMenuDiv.innerHTML = `
           <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-sky-50 via-white to-orange-50 border border-sky-100 shadow-sm">
+            <!-- background dekoratif -->
             <div class="pointer-events-none absolute -right-10 -top-10 w-40 h-40 opacity-15">
               <img src="./images/food-bg.png" alt="" class="w-full h-full object-contain">
             </div>
@@ -248,96 +321,111 @@ async function loadMenuForDate(dateStr) {
               <div class="flex-1">
                 <p class="text-xs font-semibold tracking-wide text-sky-500">本日のメニュー</p>
                 <p class="mt-1 text-lg sm:text-xl font-semibold text-sky-900">
-                  ${menu.name || '未設定'}
+                  ${menu.name || "未設定"}
                 </p>
                 <p class="mt-1 text-xs text-slate-500">日付: ${menu.date}</p>
                 <p class="mt-3 text-sm text-slate-700">
                   価格：
-                  <span class="font-bold text-orange-600">${formatJPY(menu.price || 0)}</span>
+                  <span class="font-bold text-orange-600">${formatJPY(
+                    menu.price || 0
+                  )}</span>
                 </p>
                 <p class="mt-1 text-[11px] text-slate-400">
                   社員向け日替わり弁当です。
                 </p>
               </div>
-              ${imgHtml}
+
+              ${heroHtml}
             </div>
           </div>
         `;
       }
+
+      setupHeroCarousel();
     }
   } catch (err) {
     console.error(err);
     if (todayMenuDiv) {
-      todayMenuDiv.textContent = 'メニュー取得エラー';
+      todayMenuDiv.textContent = "メニュー取得エラー";
     }
   }
 }
 
-
 // ====== Submit order ======
-orderForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  formMessage.textContent = '送信中…';
+if (orderForm) {
+  orderForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (formMessage) formMessage.textContent = "送信中…";
 
-  const dateStr = orderDateInput.value;
-  const employeeName = employeeSelect.value;
-  const status = document.querySelector('input[name="order-status"]:checked')?.value;
+    const dateStr = orderDateInput.value;
+    const employeeName = employeeSelect.value;
+    const status = document.querySelector(
+      'input[name="order-status"]:checked'
+    )?.value;
 
-  if (!dateStr || !employeeName) {
-    formMessage.textContent = '日付と社員名を入力してください。';
-    return;
-  }
-
-  try {
-    const res = await apiPost({
-      action: 'saveOrder',
-      date: dateStr,
-      employeeName,
-      status
-    });
-
-    if (res && res.success) {
-      formMessage.textContent = '保存しました。';
-      dashboardDateInput.value = dateStr;
-      dashboardMonthInput.value = monthStrFromDateStr(dateStr);
-      await Promise.all([
-        loadDaySummary(dateStr),
-        loadMonthSummary(dashboardMonthInput.value)
-      ]);
-    } else {
-      formMessage.textContent = '保存に失敗しました。';
+    if (!dateStr || !employeeName) {
+      if (formMessage)
+        formMessage.textContent = "日付と社員名を入力してください。";
+      return;
     }
-  } catch (err) {
-    console.error(err);
-    formMessage.textContent = '通信エラーが発生しました。';
-  }
-});
+
+    try {
+      const res = await apiPost({
+        action: "saveOrder",
+        date: dateStr,
+        employeeName,
+        status,
+      });
+
+      if (res && res.success) {
+        if (formMessage) formMessage.textContent = "保存しました。";
+        // sync dashboard
+        if (dashboardDateInput) dashboardDateInput.value = dateStr;
+        if (dashboardMonthInput)
+          dashboardMonthInput.value = monthStrFromDateStr(dateStr);
+        await Promise.all([
+          loadDaySummary(dateStr),
+          loadMonthSummary(dashboardMonthInput.value),
+        ]);
+      } else {
+        if (formMessage) formMessage.textContent = "保存に失敗しました。";
+      }
+    } catch (err) {
+      console.error(err);
+      if (formMessage) formMessage.textContent = "通信エラーが発生しました。";
+    }
+  });
+}
 
 // ====== Day summary ======
 async function loadDaySummary(dateStr) {
-  dashboardDateLabel.textContent = dateStr;
-  dayOrdersBody.innerHTML = '';
-  dayTotalCountEl.textContent = '-';
-  dayTotalAmountEl.textContent = '-';
+  if (dashboardDateLabel) dashboardDateLabel.textContent = dateStr;
+  if (dayOrdersBody) dayOrdersBody.innerHTML = "";
+  if (dayTotalCountEl) dayTotalCountEl.textContent = "-";
+  if (dayTotalAmountEl) dayTotalAmountEl.textContent = "-";
 
   try {
-    const data = await apiGet({ action: 'getDaySummary', date: dateStr });
+    const data = await apiGet({ action: "getDaySummary", date: dateStr });
     lastDaySummary = data;
 
-    dayTotalCountEl.textContent = `${data.totalCount || 0} 件`;
-    dayTotalAmountEl.textContent = formatJPY(data.totalAmount || 0);
+    if (dayTotalCountEl)
+      dayTotalCountEl.textContent = `${data.totalCount || 0} 件`;
+    if (dayTotalAmountEl)
+      dayTotalAmountEl.textContent = formatJPY(data.totalAmount || 0);
+
+    if (!dayOrdersBody) return;
 
     if (data.orders && data.orders.length > 0) {
-      data.orders.forEach(o => {
-        const tr = document.createElement('tr');
-        tr.className = 'border-b border-sky-50';
+      data.orders.forEach((o) => {
+        const tr = document.createElement("tr");
+        tr.className = "border-b border-sky-50";
         tr.innerHTML = `
           <td class="py-1 pr-4">${o.employee}</td>
           <td class="py-1 pr-4">
             <span class="px-2 py-0.5 rounded-full text-[11px] ${
-              o.status === '注文する'
-                ? 'bg-sky-50 text-sky-700 border border-sky-200'
-                : 'bg-orange-50 text-orange-700 border border-orange-200'
+              o.status === "注文する"
+                ? "bg-sky-50 text-sky-700 border border-sky-200"
+                : "bg-orange-50 text-orange-700 border border-orange-200"
             }">${o.status}</span>
           </td>
           <td class="py-1 text-right">${formatJPY(o.subTotal || 0)}</td>
@@ -345,7 +433,7 @@ async function loadDaySummary(dateStr) {
         dayOrdersBody.appendChild(tr);
       });
     } else {
-      const tr = document.createElement('tr');
+      const tr = document.createElement("tr");
       tr.innerHTML = `
         <td colspan="3" class="py-2 text-slate-400">注文データがありません。</td>
       `;
@@ -358,96 +446,106 @@ async function loadDaySummary(dateStr) {
 
 // ====== Month summary ======
 async function loadMonthSummary(monthStr) {
-  dashboardMonthLabel.textContent = monthStr || '';
-  monthEmployeeBody.innerHTML = '';
-  monthDayBody.innerHTML = '';
-  monthTotalCountEl.textContent = '-';
-  monthTotalAmountEl.textContent = '-';
+  if (dashboardMonthLabel) dashboardMonthLabel.textContent = monthStr || "";
+  if (monthEmployeeBody) monthEmployeeBody.innerHTML = "";
+  if (monthDayBody) monthDayBody.innerHTML = "";
+  if (monthTotalCountEl) monthTotalCountEl.textContent = "-";
+  if (monthTotalAmountEl) monthTotalAmountEl.textContent = "-";
 
   if (!monthStr) return;
 
   try {
-    const data = await apiGet({ action: 'getMonthSummary', month: monthStr });
+    const data = await apiGet({ action: "getMonthSummary", month: monthStr });
     lastMonthSummary = data;
 
-    monthTotalCountEl.textContent = `${data.totalCount || 0} 件`;
-    monthTotalAmountEl.textContent = formatJPY(data.totalAmount || 0);
+    if (monthTotalCountEl)
+      monthTotalCountEl.textContent = `${data.totalCount || 0} 件`;
+    if (monthTotalAmountEl)
+      monthTotalAmountEl.textContent = formatJPY(data.totalAmount || 0);
 
-    // employee
-    if (data.perEmployee && data.perEmployee.length > 0) {
-      data.perEmployee.forEach(e => {
-        const tr = document.createElement('tr');
-        tr.className = 'border-b border-sky-50';
-        tr.innerHTML = `
-          <td class="py-1 pr-4">${e.employee}</td>
-          <td class="py-1 pr-4 text-right">${e.count}</td>
-          <td class="py-1 text-right">${formatJPY(e.amount || 0)}</td>
-        `;
+    // per employee
+    if (monthEmployeeBody) {
+      if (data.perEmployee && data.perEmployee.length > 0) {
+        data.perEmployee.forEach((e) => {
+          const tr = document.createElement("tr");
+          tr.className = "border-b border-sky-50";
+          tr.innerHTML = `
+            <td class="py-1 pr-4">${e.employee}</td>
+            <td class="py-1 pr-4 text-right">${e.count}</td>
+            <td class="py-1 text-right">${formatJPY(e.amount || 0)}</td>
+          `;
+          monthEmployeeBody.appendChild(tr);
+        });
+      } else {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="3" class="py-2 text-slate-400">データがありません。</td>`;
         monthEmployeeBody.appendChild(tr);
-      });
-    } else {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td colspan="3" class="py-2 text-slate-400">データがありません。</td>`;
-      monthEmployeeBody.appendChild(tr);
+      }
     }
 
     // per day
-    if (data.perDay && data.perDay.length > 0) {
-      data.perDay.forEach(d => {
-        const tr = document.createElement('tr');
-        tr.className = 'border-b border-sky-50';
-        tr.innerHTML = `
-          <td class="py-1 pr-4">${d.date}</td>
-          <td class="py-1 pr-4 text-right">${d.count}</td>
-          <td class="py-1 text-right">${formatJPY(d.amount || 0)}</td>
-        `;
+    if (monthDayBody) {
+      if (data.perDay && data.perDay.length > 0) {
+        data.perDay.forEach((d) => {
+          const tr = document.createElement("tr");
+          tr.className = "border-b border-sky-50";
+          tr.innerHTML = `
+            <td class="py-1 pr-4">${d.date}</td>
+            <td class="py-1 pr-4 text-right">${d.count}</td>
+            <td class="py-1 text-right">${formatJPY(d.amount || 0)}</td>
+          `;
+          monthDayBody.appendChild(tr);
+        });
+      } else {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="3" class="py-2 text-slate-400">データがありません。</td>`;
         monthDayBody.appendChild(tr);
-      });
-    } else {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td colspan="3" class="py-2 text-slate-400">データがありません。</td>`;
-      monthDayBody.appendChild(tr);
+      }
     }
   } catch (err) {
     console.error(err);
   }
 }
 
-// ====== Dashboard refresh button ======
-btnRefreshDashboard.addEventListener('click', async () => {
-  const dateStr = dashboardDateInput.value || todayStr();
-  const monthStr = dashboardMonthInput.value || monthStrFromDateStr(dateStr);
+// ====== Dashboard refresh ======
+if (btnRefreshDashboard) {
+  btnRefreshDashboard.addEventListener("click", async () => {
+    const dateStr = dashboardDateInput.value || todayStr();
+    const monthStr = dashboardMonthInput.value || monthStrFromDateStr(dateStr);
 
-  dashboardDateInput.value = dateStr;
-  dashboardMonthInput.value = monthStr;
+    if (dashboardDateInput) dashboardDateInput.value = dateStr;
+    if (dashboardMonthInput) dashboardMonthInput.value = monthStr;
 
-  await Promise.all([
-    loadDaySummary(dateStr),
-    loadMonthSummary(monthStr)
-  ]);
-});
+    await Promise.all([loadDaySummary(dateStr), loadMonthSummary(monthStr)]);
+  });
+}
 
 // ====== Date change handlers ======
-orderDateInput.addEventListener('change', async () => {
-  const dateStr = orderDateInput.value;
-  if (!dateStr) return;
-  await loadMenuForDate(dateStr);
-  dashboardDateInput.value = dateStr;
-  dashboardMonthInput.value = monthStrFromDateStr(dateStr);
-  await Promise.all([
-    loadDaySummary(dateStr),
-    loadMonthSummary(dashboardMonthInput.value)
-  ]);
-});
+if (orderDateInput) {
+  orderDateInput.addEventListener("change", async () => {
+    const dateStr = orderDateInput.value;
+    if (!dateStr) return;
+    await loadMenuForDate(dateStr);
+    if (dashboardDateInput) dashboardDateInput.value = dateStr;
+    if (dashboardMonthInput)
+      dashboardMonthInput.value = monthStrFromDateStr(dateStr);
+    await Promise.all([
+      loadDaySummary(dateStr),
+      loadMonthSummary(dashboardMonthInput.value),
+    ]);
+  });
+}
 
-dashboardDateInput.addEventListener('change', async () => {
-  const dateStr = dashboardDateInput.value;
-  if (!dateStr) return;
-  await loadDaySummary(dateStr);
-  if (!dashboardMonthInput.value) {
-    dashboardMonthInput.value = monthStrFromDateStr(dateStr);
-  }
-});
+if (dashboardDateInput) {
+  dashboardDateInput.addEventListener("change", async () => {
+    const dateStr = dashboardDateInput.value;
+    if (!dateStr) return;
+    await loadDaySummary(dateStr);
+    if (!dashboardMonthInput.value && dashboardMonthInput) {
+      dashboardMonthInput.value = monthStrFromDateStr(dateStr);
+    }
+  });
+}
 
 // ====== Auto change when real date changes ======
 let currentSystemDate = todayStr();
@@ -455,122 +553,132 @@ setInterval(async () => {
   const now = todayStr();
   if (now !== currentSystemDate) {
     currentSystemDate = now;
-    orderDateInput.value = now;
-    dashboardDateInput.value = now;
-    dashboardMonthInput.value = monthStrFromDateStr(now);
+    if (orderDateInput) orderDateInput.value = now;
+    if (dashboardDateInput) dashboardDateInput.value = now;
+    if (dashboardMonthInput)
+      dashboardMonthInput.value = monthStrFromDateStr(now);
     await loadMenuForDate(now);
     await Promise.all([
       loadDaySummary(now),
-      loadMonthSummary(monthStrFromDateStr(now))
+      loadMonthSummary(monthStrFromDateStr(now)),
     ]);
   }
 }, 60 * 1000);
 
-// ====== Download Excel/CSV ======
-btnDownloadDay.addEventListener('click', () => {
-  if (!lastDaySummary) {
-    alert('まずダッシュボードを更新してください。');
-    return;
-  }
-  const d = lastDaySummary;
-  const rows = [];
-  rows.push(['日付', d.date || '']);
-  rows.push([]);
-  rows.push(['社員名', 'ステータス', '単価', '小計']);
-  (d.orders || []).forEach(o => {
-    rows.push([o.employee, o.status, o.unitPrice || 0, o.subTotal || 0]);
+// ====== Download CSV buttons ======
+if (btnDownloadDay) {
+  btnDownloadDay.addEventListener("click", () => {
+    if (!lastDaySummary) {
+      alert("まずダッシュボードを更新してください。");
+      return;
+    }
+    const d = lastDaySummary;
+    const rows = [];
+    rows.push(["日付", d.date || ""]);
+    rows.push([]);
+    rows.push(["社員名", "ステータス", "単価", "小計"]);
+    (d.orders || []).forEach((o) => {
+      rows.push([o.employee, o.status, o.unitPrice || 0, o.subTotal || 0]);
+    });
+    rows.push([]);
+    rows.push(["注文数合計", d.totalCount || 0]);
+    rows.push(["金額合計", d.totalAmount || 0]);
+
+    downloadCsv(`day-summary-${d.date || "unknown"}.csv`, rows);
   });
-  rows.push([]);
-  rows.push(['注文数合計', d.totalCount || 0]);
-  rows.push(['金額合計', d.totalAmount || 0]);
+}
 
-  downloadCsv(`day-summary-${d.date || 'unknown'}.csv`, rows);
-});
+if (btnDownloadWeek) {
+  btnDownloadWeek.addEventListener("click", () => {
+    if (!lastMonthSummary || !lastDaySummary) {
+      alert("まず日次と月次の集計を更新してください。");
+      return;
+    }
+    const baseDate = lastDaySummary.date;
+    if (!baseDate) {
+      alert("日付情報がありません。");
+      return;
+    }
+    const { start, end } = getWeekRange(baseDate);
 
-btnDownloadWeek.addEventListener('click', () => {
-  if (!lastMonthSummary || !lastDaySummary) {
-    alert('まず日次と月次の集計を更新してください。');
-    return;
-  }
-  const baseDate = lastDaySummary.date;
-  if (!baseDate) {
-    alert('日付情報がありません。');
-    return;
-  }
-  const { start, end } = getWeekRange(baseDate);
+    const perDay = (lastMonthSummary.perDay || []).filter(
+      (d) => d.date >= start && d.date <= end
+    );
 
-  const perDay = (lastMonthSummary.perDay || []).filter(d =>
-    d.date >= start && d.date <= end
-  );
+    const rows = [];
+    rows.push(["基準日", baseDate]);
+    rows.push(["週範囲", `${start} 〜 ${end}`]);
+    rows.push([]);
+    rows.push(["日付", "注文数", "合計金額"]);
+    perDay.forEach((d) => {
+      rows.push([d.date, d.count, d.amount]);
+    });
 
-  const rows = [];
-  rows.push(['基準日', baseDate]);
-  rows.push(['週範囲', `${start} 〜 ${end}`]);
-  rows.push([]);
-  rows.push(['日付', '注文数', '合計金額']);
-  perDay.forEach(d => {
-    rows.push([d.date, d.count, d.amount]);
+    const totalCount = perDay.reduce((s, d) => s + (d.count || 0), 0);
+    const totalAmount = perDay.reduce((s, d) => s + (d.amount || 0), 0);
+    rows.push([]);
+    rows.push(["注文数合計", totalCount]);
+    rows.push(["金額合計", totalAmount]);
+
+    downloadCsv(`week-summary-${start}_to_${end}.csv`, rows);
   });
+}
 
-  const totalCount = perDay.reduce((s, d) => s + (d.count || 0), 0);
-  const totalAmount = perDay.reduce((s, d) => s + (d.amount || 0), 0);
-  rows.push([]);
-  rows.push(['注文数合計', totalCount]);
-  rows.push(['金額合計', totalAmount]);
+if (btnDownloadMonth) {
+  btnDownloadMonth.addEventListener("click", () => {
+    if (!lastMonthSummary) {
+      alert("まず月間集計を更新してください。");
+      return;
+    }
+    const m = lastMonthSummary;
+    const rows = [];
 
-  downloadCsv(`week-summary-${start}_to_${end}.csv`, rows);
-});
+    rows.push(["対象月", m.month || ""]);
+    rows.push([]);
+    rows.push(["【社員別集計】"]);
+    rows.push(["社員名", "注文数", "合計金額"]);
+    (m.perEmployee || []).forEach((e) => {
+      rows.push([e.employee, e.count, e.amount]);
+    });
 
-btnDownloadMonth.addEventListener('click', () => {
-  if (!lastMonthSummary) {
-    alert('まず月間集計を更新してください。');
-  return;
-  }
-  const m = lastMonthSummary;
-  const rows = [];
+    rows.push([]);
+    rows.push(["【日別集計】"]);
+    rows.push(["日付", "注文数", "合計金額"]);
+    (m.perDay || []).forEach((d) => {
+      rows.push([d.date, d.count, d.amount]);
+    });
 
-  rows.push(['対象月', m.month || '']);
-  rows.push([]);
-  rows.push(['【社員別集計】']);
-  rows.push(['社員名', '注文数', '合計金額']);
-  (m.perEmployee || []).forEach(e => {
-    rows.push([e.employee, e.count, e.amount]);
+    rows.push([]);
+    rows.push(["注文数合計", m.totalCount || 0]);
+    rows.push(["金額合計", m.totalAmount || 0]);
+
+    downloadCsv(`month-summary-${m.month || "unknown"}.csv`, rows);
   });
-
-  rows.push([]);
-  rows.push(['【日別集計】']);
-  rows.push(['日付', '注文数', '合計金額']);
-  (m.perDay || []).forEach(d => {
-    rows.push([d.date, d.count, d.amount]);
-  });
-
-  rows.push([]);
-  rows.push(['注文数合計', m.totalCount || 0]);
-  rows.push(['金額合計', m.totalAmount || 0]);
-
-  downloadCsv(`month-summary-${m.month || 'unknown'}.csv`, rows);
-});
+}
 
 // ====== Init ======
 async function init() {
   const today = todayStr();
-  orderDateInput.value = today;
-  dashboardDateInput.value = today;
-  dashboardMonthInput.value = monthStrFromDateStr(today);
+  if (orderDateInput) orderDateInput.value = today;
+  if (dashboardDateInput) dashboardDateInput.value = today;
+  if (dashboardMonthInput)
+    dashboardMonthInput.value = monthStrFromDateStr(today);
 
   await loadEmployees();
   await loadMenuForDate(today);
   await Promise.all([
     loadDaySummary(today),
-    loadMonthSummary(monthStrFromDateStr(today))
+    loadMonthSummary(monthStrFromDateStr(today)),
   ]);
+  activateTab("order");
 }
 
 // PWA: register service worker
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .catch(err => console.log('SW registration failed', err));
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("./sw.js")
+      .catch((err) => console.log("SW registration failed", err));
   });
 }
 
