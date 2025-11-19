@@ -277,11 +277,14 @@ async function loadWeather() {
       `&lang=ja&units=metric&appid=${WEATHER_API_KEY}`;
 
     const res = await fetch(url);
-    if (!res.ok) throw new Error('weather response error: ' + res.status);
+    if (!res.ok) {
+      throw new Error('weather response error: ' + res.status);
+    }
 
     const data = await res.json();
+
     const temp = Math.round(data.main?.temp ?? 0);
-    const wObj = data.weather && data.weather[0] ? data.weather[0] : null;
+    const wObj = (data.weather && data.weather[0]) ? data.weather[0] : null;
     const main = wObj?.main ?? '';
     const desc = wObj?.description ?? '';
     const emoji = weatherEmojiFromMain(main);
