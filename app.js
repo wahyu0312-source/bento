@@ -190,32 +190,43 @@ const todayStatusBaseClass =
 // ====== Tabs ======
 function activateTab(name) {
   const groups = [
-    { name: 'order', section: orderSection, tab: tabOrder },
-    { name: 'dashboard', section: dashboardSection, tab: tabDashboard },
-    { name: 'calendar', section: calendarSection, tab: tabCalendar },
+    {
+      tab: tabOrder,
+      section: orderSection,
+      key: 'order',
+    },
+    {
+      tab: tabDashboard,
+      section: dashboardSection,
+      key: 'dashboard',
+    },
+    {
+      tab: tabCalendar,
+      section: calendarSection,
+      key: 'calendar',
+    },
   ];
 
   groups.forEach(g => {
-    if (!g.section || !g.tab) return;
-    const active = g.name === name;
+    const isActive = (g.key === name);
+    if (!g.tab || !g.section) return;
 
-    g.section.classList.toggle('hidden', !active);
-
-    g.tab.classList.toggle('bg-white', active);
-    g.tab.classList.toggle('text-sky-900', active);
-    g.tab.classList.toggle('border', active);
-    g.tab.classList.toggle('border-sky-300', active);
-    g.tab.classList.toggle('shadow-sm', active);
-
-    if (!active) {
+    if (isActive) {
+      g.section.classList.remove('hidden');
+      g.tab.classList.add('bg-white', 'text-sky-900', 'border', 'border-sky-300', 'shadow-sm');
+    } else {
+      g.section.classList.add('hidden');
       g.tab.classList.remove('bg-white', 'text-sky-900', 'border', 'border-sky-300', 'shadow-sm');
     }
   });
+
+  // ★ NEW: setiap buka tab "メニューカレンダー", paksa reload kalender
+  if (name === 'calendar' && calendarMonthInput) {
+    const ym = calendarMonthInput.value || todayStr().slice(0, 7); // yyyy-MM
+    loadMenuCalendar(ym);
+  }
 }
 
-if (tabOrder) tabOrder.addEventListener('click', () => activateTab('order'));
-if (tabDashboard) tabDashboard.addEventListener('click', () => activateTab('dashboard'));
-if (tabCalendar) tabCalendar.addEventListener('click', () => activateTab('calendar'));
 
 // ====== Dashboard fresh badge ======
 function updateDashboardBadge() {
@@ -1092,25 +1103,45 @@ if (btnDownloadEmpPdf) {
 // ====== MENU CALENDAR VIEW ======
 async function loadMenuCalendar(monthStr) {
   if (!calendarGrid) return;
-  if (!monthStr) {
-    calendarGrid.innerHTML =
-      '<p class="text-[11px] sm:text-xs text-slate-500">対象月を選択してください。</p>';
-    return;
+
+  const ym = monthStr || todayStr().slice(0, 7);
+  if (calendarMonthInput) {
+    calendarMonthInput.value = ym;
   }
 
-  calendarGrid.innerHTML =
-    '<p class="text-[11px] sm:text-xs text-slate-500">読み込み中…</p>';
+  calendarGrid.innerHTML = `
+    <div class="flex items-center justify-center py-8 text-sm text-slate-500">
+      読み込み中…
+    </div>
+  `;
 
   try {
-    const data = await apiGet({ action: 'getMenuCalendar', month: monthStr });
+    const data = await apiGet({
+      action: 'getMenuCalendar',
+      month: ym,
+    });
+
+    if (!data || !Array.isArray(data.items)) {
+      calendarGrid.innerHTML = `
+        <div class="flex items-center justify-center py-8 text-sm text-slate-500">
+          カレンダー情報がありません。
+        </div>
+      `;
+      return;
+    }
+
     const items = data.items || [];
-    renderMenuCalendar(monthStr, items);
+    renderMenuCalendar(ym, items);
   } catch (err) {
-    console.error(err);
-    calendarGrid.innerHTML =
-      '<p class="text-[11px] sm:text-xs text-red-500">メニュー取得エラー</p>';
+    console.error('calendar error', err);
+    calendarGrid.innerHTML = `
+      <div class="flex items-center justify-center py-8 text-sm text-red-500">
+        カレンダー情報を取得できません。時間をおいて再度お試しください。
+      </div>
+    `;
   }
 }
+
 
 function renderMenuCalendar(monthStr, items) {
   if (!calendarGrid) return;
