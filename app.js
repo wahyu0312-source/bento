@@ -1,365 +1,235 @@
-/* =========================================================
+/* ========================================================= 
  * app.js — TSH 弁当注文 (frontend)
  * =======================================================*/
 
-// ====== SETTING ======
-const API_BASE_URL =
-  'https://script.google.com/macros/s/AKfycbwevJsl--6Sy1JRWJzTrlybNRlTvkttpc7xsM03-nOhvhb6pGH2PlP7AHLA8QqwjZmZ/exec';
-
-// Weather (OpenWeatherMap)
-const WEATHER_API_KEY = '9da4e73a2a764eafc9e32e5b39224a9c'; 
+// ====== SETTINGS ======
+const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwevJsl--6Sy1JRWJzTrlybNRlTvkttpc7xsM03-nOhvhb6pGH2PlP7AHLA8QqwjZmZ/exec';
+const WEATHER_API_KEY = '9da4e73a2a764eafc9e32e5b39224a9c';
 const WEATHER_CITY = 'Yokohama,jp';
 
-// Hari libur manual (opsional, format "yyyy-MM-dd")
-const HOLIDAYS = [
-  // '2025-01-01',
-];
-
-const weekdayJa = ['日', '月', '火', '水', '木', '金', '土'];
-
-// ====== Utils ======
-function formatJPY(amount) {
-  return new Intl.NumberFormat('ja-JP', {
-    style: 'currency',
-    currency: 'JPY',
-  }).format(amount || 0);
-}
-
+// ====== UTILS ======
 function todayStr() {
   const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
+  return d.toISOString().split('T')[0];
 }
-
 function monthStrFromDateStr(dateStr) {
-  return dateStr.slice(0, 7); // yyyy-MM
+  return dateStr.slice(0, 7);
 }
-
 function toDateStr(d) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
+  return d.toISOString().split('T')[0];
 }
-
-function getWeekRange(dateStr) {
-  const base = new Date(dateStr);
-  const day = base.getDay(); // 0=Sun .. 6=Sat
-  const diffToMonday = (day + 6) % 7; // Monday=0
-  const start = new Date(base);
-  start.setDate(base.getDate() - diffToMonday);
-  const end = new Date(start);
-  end.setDate(start.getDate() + 6);
-  return { start: toDateStr(start), end: toDateStr(end) };
+function fmtJPY(n) {
+  return new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }).format(n || 0);
 }
+const weekdayJa = ['日','月','火','水','木','金','土'];
 
-function formatTodayHeader(dateStr) {
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return '本日 -';
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  const w = weekdayJa[d.getDay()] || '';
-  return `本日 ${y}/${m}/${dd}（${w}）`;
-}
-
-// ====== CSV Helpers ======
-function toCsv(rows) {
-  return rows
-    .map(row =>
-      row
-        .map(v => {
-          const s = v == null ? '' : String(v);
-          return `"${s.replace(/"/g, '""')}"`;
-        })
-        .join(','),
-    )
-    .join('\r\n');
-}
-
-function downloadCsv(filename, rows) {
-  const csvContent = toCsv(rows);
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-// ====== API helpers ======
 async function apiGet(params) {
   const url = new URL(API_BASE_URL);
   Object.keys(params).forEach(k => url.searchParams.append(k, params[k]));
-  const res = await fetch(url.toString(), { method: 'GET' });
+  const res = await fetch(url);
   return res.json();
 }
-
 async function apiPost(data) {
   const res = await fetch(API_BASE_URL, {
     method: 'POST',
-    // JANGAN pakai 'application/json' supaya tidak ada preflight CORS
-    headers: {
-      'Content-Type': 'text/plain;charset=utf-8',
-    },
-    body: JSON.stringify(data),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
   });
-
   return res.json();
 }
 
-// ====== DOM refs ======
-const todayHeaderText = document.getElementById('today-header-text');
-const weatherHeaderText = document.getElementById('weather-header-text');
-const todayOrderStatus = document.getElementById('today-order-status');
-
+// ====== DOM ======
+const tabOrder = document.getElementById('tab-order');
+const tabDashboard = document.getElementById('tab-dashboard');
+const tabCalendar = document.getElementById('tab-calendar');
 const orderSection = document.getElementById('order-section');
 const dashboardSection = document.getElementById('dashboard-section');
 const calendarSection = document.getElementById('calendar-section');
 
-const tabOrder = document.getElementById('tab-order');
-const tabDashboard = document.getElementById('tab-dashboard');
-const tabCalendar = document.getElementById('tab-calendar');
-
+const todayHeaderText = document.getElementById('today-header-text');
+const weatherHeaderText = document.getElementById('weather-header-text');
+const todayMenuDiv = document.getElementById('today-menu');
+const orderForm = document.getElementById('order-form');
 const orderDateInput = document.getElementById('order-date');
 const employeeSelect = document.getElementById('employee-name');
 const employeeSearchInput = document.getElementById('employee-search');
 const formMessage = document.getElementById('form-message');
-const orderForm = document.getElementById('order-form');
 
-const todayDateLabel = document.getElementById('today-date-label');
-const todayMenuDiv = document.getElementById('today-menu');
-
-const dashboardDateInput = document.getElementById('dashboard-date');
-const dashboardMonthInput = document.getElementById('dashboard-month');
-const dashboardDateLabel = document.getElementById('dashboard-date-label');
-const dashboardMonthLabel = document.getElementById('dashboard-month-label');
-const dashboardFreshBadge = document.getElementById('dashboard-fresh-badge');
-
-const btnRefreshDashboard = document.getElementById('btn-refresh-dashboard');
-
-const dayTotalCountEl = document.getElementById('day-total-count');
-const dayTotalAmountEl = document.getElementById('day-total-amount');
-const dayOrdersBody = document.getElementById('day-orders-body');
-
-const monthTotalCountEl = document.getElementById('month-total-count');
-const monthTotalAmountEl = document.getElementById('month-total-amount');
-const monthEmployeeBody = document.getElementById('month-employee-body');
-const monthDayBody = document.getElementById('month-day-body');
-
-const btnDownloadDay = document.getElementById('btn-download-day');
-const btnDownloadWeek = document.getElementById('btn-download-week');
-const btnDownloadMonth = document.getElementById('btn-download-month');
-
-// multi-date
-const multiModeToggle = document.getElementById('multi-mode-toggle');
-const multiPanel = document.getElementById('multi-panel');
-const multiMonthInput = document.getElementById('multi-month');
-const multiDaysContainer = document.getElementById('multi-days-container');
-const btnGenerateMultiDays = document.getElementById('btn-generate-multi-days');
-const btnSubmitMulti = document.getElementById('btn-submit-multi');
-
-// employee summary
-const summaryEmployeeSelect = document.getElementById('summary-employee');
-const summaryMonthInput = document.getElementById('summary-month');
-const btnLoadEmployeeSummary = document.getElementById('btn-load-employee-summary');
-const btnDownloadEmpExcel = document.getElementById('btn-download-employee-excel');
-const btnDownloadEmpPdf = document.getElementById('btn-download-employee-pdf');
-const employeeSummaryView = document.getElementById('employee-summary-view');
-
-// menu calendar
-const calendarMonthInput = document.getElementById('calendar-month');
-const calendarGrid = document.getElementById('calendar-grid');
-
-// ====== Global state ======
-let lastDaySummary = null;
-let lastMonthSummary = null;
-let lastEmployeeSummary = null;
-let allEmployees = [];
-let dashboardIsFresh = true;
-
-const todayStatusBaseClass =
-  'inline-flex items-center px-2 py-0.5 rounded-full border text-[11px]';
-
-// ====== Tabs ======
+// ====== TAB SYSTEM ======
 function activateTab(name) {
-  const groups = [
-    {
-      tab: tabOrder,
-      section: orderSection,
-      key: 'order',
-    },
-    {
-      tab: tabDashboard,
-      section: dashboardSection,
-      key: 'dashboard',
-    },
-    {
-      tab: tabCalendar,
-      section: calendarSection,
-      key: 'calendar',
-    },
-  ];
+  const sections = {
+    order: orderSection,
+    dashboard: dashboardSection,
+    calendar: calendarSection
+  };
+  Object.values(sections).forEach(s => s?.classList.add('hidden'));
+  if (sections[name]) sections[name].classList.remove('hidden');
 
-  groups.forEach(g => {
-    const isActive = g.key === name;
-    if (!g.tab || !g.section) return;
-
-    if (isActive) {
-      g.section.classList.remove('hidden');
-      g.tab.classList.add(
-        'bg-white',
-        'text-sky-900',
-        'border',
-        'border-sky-300',
-        'shadow-sm',
-      );
-    } else {
-      g.section.classList.add('hidden');
-      g.tab.classList.remove(
-        'bg-white',
-        'text-sky-900',
-        'border',
-        'border-sky-300',
-        'shadow-sm',
-      );
-    }
+  [tabOrder, tabDashboard, tabCalendar].forEach(b => {
+    b?.classList.remove('bg-white', 'text-sky-900', 'border', 'border-sky-300', 'shadow-sm');
   });
-
-  // Saat buka tab kalender, paksa reload kalender
-  if (name === 'calendar' && calendarMonthInput) {
-    const ym = calendarMonthInput.value || todayStr().slice(0, 7); // yyyy-MM
-    loadMenuCalendar(ym);
-  }
+  if (name === 'order') tabOrder?.classList.add('bg-white','text-sky-900','border','border-sky-300','shadow-sm');
+  if (name === 'dashboard') tabDashboard?.classList.add('bg-white','text-sky-900','border','border-sky-300','shadow-sm');
+  if (name === 'calendar') tabCalendar?.classList.add('bg-white','text-sky-900','border','border-sky-300','shadow-sm');
 }
 
-// ★★ EVENT LISTENER UNTUK TAB ★★
-if (tabOrder) {
-  tabOrder.addEventListener('click', () => activateTab('order'));
-}
-if (tabDashboard) {
-  tabDashboard.addEventListener('click', () => activateTab('dashboard'));
-}
-if (tabCalendar) {
-  tabCalendar.addEventListener('click', () => activateTab('calendar'));
-}
+if (tabOrder) tabOrder.addEventListener('click', () => activateTab('order'));
+if (tabDashboard) tabDashboard.addEventListener('click', () => activateTab('dashboard'));
+if (tabCalendar) tabCalendar.addEventListener('click', () => activateTab('calendar'));
 
-// ====== Dashboard fresh badge ======
-function updateDashboardBadge() {
-  if (!dashboardFreshBadge) return;
-  if (dashboardIsFresh) {
-    dashboardFreshBadge.textContent = '最新';
-    dashboardFreshBadge.className =
-      'inline-flex items-center px-2 py-0.5 rounded-full text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200';
-  } else {
-    dashboardFreshBadge.textContent = '未更新';
-    dashboardFreshBadge.className =
-      'inline-flex items-center px-2 py-0.5 rounded-full text-[11px] bg-amber-50 text-amber-700 border border-amber-200';
-  }
+// ====== WEATHER ======
+function weatherEmoji(main) {
+  const m = (main || '').toLowerCase();
+  if (m.includes('cloud')) return '⛅';
+  if (m.includes('rain')) return '🌧';
+  if (m.includes('clear')) return '☀';
+  return '🌤';
 }
-function markDashboardFresh() {
-  dashboardIsFresh = true;
-  updateDashboardBadge();
-}
-function markDashboardDirty() {
-  dashboardIsFresh = false;
-  updateDashboardBadge();
-}
-
-// ====== Weather ======
-function weatherEmojiFromMain(main) {
-  const key = (main || '').toLowerCase();
-  switch (key) {
-    case 'clear':
-      return '☀';
-    case 'clouds':
-      return '⛅';
-    case 'rain':
-      return '🌧';
-    case 'drizzle':
-      return '🌦';
-    case 'thunderstorm':
-      return '⛈';
-    case 'snow':
-      return '❄';
-    default:
-      return '🌤';
-  }
-}
-
 async function loadWeather() {
-  if (!weatherHeaderText) return;
-
-  if (!WEATHER_API_KEY) {
-    weatherHeaderText.textContent = '天気：🌤 くもり時々晴れ';
-    return;
-  }
-
-  weatherHeaderText.textContent = '天気取得中…';
-
   try {
-    const url =
-      `https://api.openweathermap.org/data/2.5/weather` +
-      `?q=${encodeURIComponent(WEATHER_CITY)}` +
-      `&lang=ja&units=metric&appid=${WEATHER_API_KEY}`;
-
+    weatherHeaderText.textContent = '天気取得中...';
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${WEATHER_CITY}&appid=${WEATHER_API_KEY}&units=metric&lang=ja`;
     const res = await fetch(url);
-    if (!res.ok) {
-      throw new Error('weather response error: ' + res.status);
-    }
-
     const data = await res.json();
-
-    const temp = Math.round(data.main?.temp ?? 0);
-    const wObj = data.weather && data.weather[0] ? data.weather[0] : null;
-    const main = wObj?.main ?? '';
-    theDesc = wObj?.description ?? '';
-    const emoji = weatherEmojiFromMain(main);
-
-    weatherHeaderText.textContent = `天気：${emoji} ${theDesc} ${temp}℃`;
+    const temp = Math.round(data.main.temp);
+    const desc = data.weather[0].description;
+    const icon = weatherEmoji(data.weather[0].main);
+    weatherHeaderText.textContent = `天気：${icon} ${desc} ${temp}℃`;
   } catch (err) {
-    console.error('weather error', err);
     weatherHeaderText.textContent = '天気情報取得エラー';
   }
 }
 
-// (… POTONGAN KODE LAIN TIDAK DIUBAH …)
-// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-// Di sini kamu bisa pakai isi file `app.js` kamu yang tadi,
-// hanya pastikan bagian TAB listener & calendar sudah sama
-// seperti di atas.
-// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+// ====== EMPLOYEES ======
+let allEmployees = [];
+async function loadEmployees() {
+  try {
+    const data = await apiGet({ action: 'getEmployees' });
+    allEmployees = data.employees || [];
+    renderEmployeeOptions('');
+  } catch (err) {
+    console.error('loadEmployees error:', err);
+  }
+}
+function renderEmployeeOptions(filterText) {
+  if (!employeeSelect) return;
+  const keyword = (filterText || '').toLowerCase();
+  employeeSelect.innerHTML = '';
+  const filtered = allEmployees.filter(e =>
+    !keyword ||
+    e.name.toLowerCase().includes(keyword) ||
+    (e.dept && e.dept.toLowerCase().includes(keyword))
+  );
+  if (filtered.length === 0) {
+    const opt = document.createElement('option');
+    opt.textContent = '社員リストがありません';
+    employeeSelect.appendChild(opt);
+    return;
+  }
+  filtered.forEach(e => {
+    const opt = document.createElement('option');
+    opt.value = e.name;
+    opt.textContent = e.dept ? `${e.name}（${e.dept}）` : e.name;
+    employeeSelect.appendChild(opt);
+  });
+}
+if (employeeSearchInput)
+  employeeSearchInput.addEventListener('input', () => renderEmployeeOptions(employeeSearchInput.value));
 
-// ====== Init ======
+// ====== MENU (Today + Calendar) ======
+async function loadMenuForDate(dateStr) {
+  todayMenuDiv.innerHTML = '読み込み中...';
+  try {
+    const data = await apiGet({ action: 'getMenu', date: dateStr });
+    const menu = data.menu;
+    if (!menu) {
+      todayMenuDiv.textContent = '本日のメニューがありません。';
+      return;
+    }
+    todayMenuDiv.innerHTML = `
+      <div class="flex items-center justify-between p-4 rounded-2xl bg-white/80 border border-sky-100 shadow-sm">
+        <div>
+          <h3 class="text-sky-900 font-semibold text-base">${menu.name}</h3>
+          <p class="text-slate-500 text-sm mt-1">日付: ${menu.date}</p>
+          <p class="text-orange-600 font-bold mt-1">${fmtJPY(menu.price)}</p>
+        </div>
+        ${
+          menu.imageUrl
+            ? `<img src="${menu.imageUrl}" alt="menu" class="w-24 h-24 object-cover rounded-xl shadow-sm" />`
+            : ''
+        }
+      </div>`;
+  } catch (err) {
+    todayMenuDiv.textContent = 'メニュー読み込みエラー';
+  }
+}
+
+async function loadMenuCalendar(monthStr) {
+  const calendarDiv = document.getElementById('calendar-view');
+  if (!calendarDiv) return;
+  calendarDiv.innerHTML = '読み込み中...';
+  try {
+    const data = await apiGet({ action: 'getMenuCalendar', month: monthStr });
+    const list = data.items || [];
+    if (list.length === 0) {
+      calendarDiv.innerHTML = '<p class="text-slate-500 text-sm">この月のメニューはありません。</p>';
+      return;
+    }
+    let html = '<div class="grid grid-cols-7 gap-2 text-xs sm:text-sm">';
+    list.forEach(item => {
+      const d = new Date(item.date);
+      const w = weekdayJa[d.getDay()];
+      html += `
+        <div class="p-2 rounded-xl border bg-white/70 text-slate-700">
+          <div class="font-semibold">${item.date}（${w}）</div>
+          <div class="text-sky-800">${item.name || '-'}</div>
+          <div class="text-orange-600">${fmtJPY(item.price || 0)}</div>
+        </div>`;
+    });
+    html += '</div>';
+    calendarDiv.innerHTML = html;
+  } catch (err) {
+    console.error('loadMenuCalendar error:', err);
+    calendarDiv.textContent = 'カレンダー読み込みエラー';
+  }
+}
+
+// ====== FORM ======
+if (orderForm) {
+  orderForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    formMessage.textContent = '送信中...';
+    const dateStr = orderDateInput.value;
+    const employeeName = employeeSelect.value;
+    const status = document.querySelector('input[name="order-status"]:checked')?.value;
+    try {
+      const res = await apiPost({
+        action: 'saveOrder',
+        date: dateStr,
+        employeeName,
+        status,
+      });
+      if (res.success) formMessage.textContent = '保存しました。';
+      else formMessage.textContent = '保存に失敗しました。';
+    } catch (err) {
+      formMessage.textContent = '通信エラーが発生しました。';
+    }
+  });
+}
+
+// ====== INIT ======
 async function init() {
   const today = todayStr();
-
   if (orderDateInput) orderDateInput.value = today;
-  if (dashboardDateInput) dashboardDateInput.value = today;
-  if (dashboardMonthInput) dashboardMonthInput.value = monthStrFromDateStr(today);
-  if (multiMonthInput) multiMonthInput.value = today.slice(0, 7);
-  if (calendarMonthInput) calendarMonthInput.value = today.slice(0, 7);
-
-  if (todayHeaderText) todayHeaderText.textContent = formatTodayHeader(today);
-
-  await Promise.all([loadEmployees(), loadMenuForDate(today)]);
-  await Promise.all([
-    loadDaySummary(today),
-    loadMonthSummary(monthStrFromDateStr(today)),
-    loadMenuCalendar(today.slice(0, 7)),
-  ]);
-
-  markDashboardFresh();
-  loadWeather();
+  if (todayHeaderText) todayHeaderText.textContent = `本日 ${today}`;
+  await loadWeather();
+  await loadEmployees();
+  await loadMenuForDate(today);
+  await loadMenuCalendar(monthStrFromDateStr(today));
   activateTab('order');
 }
 
-// PWA: register service worker
+// PWA Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
@@ -368,4 +238,6 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-init();
+window.addEventListener('DOMContentLoaded', () => {
+  init().catch(err => console.error('Init error:', err));
+});
