@@ -1,17 +1,23 @@
-const CACHE_NAME = 'tsh-bento-v3';
+// sw.js
+
+// GANTI versi kalau rilis baru
+const CACHE_NAME = 'tsh-bento-v4';
+
 const CORE_ASSETS = [
   './',
   './index.html',
   './app.js',
-  './manifest.json'
+  './manifest.json',
 ];
 
+// Install: cache asset dasar
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(CORE_ASSETS))
   );
 });
 
+// Activate: buang cache versi lama
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -22,10 +28,23 @@ self.addEventListener('activate', (event) => {
       )
     )
   );
+  self.clients.claim();
 });
 
+// Fetch: NETWORK FIRST, kalau gagal baru pakai cache
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+
   event.respondWith(
-    caches.match(event.request).then(res => res || fetch(event.request))
+    fetch(event.request)
+      .then(response => {
+        // simpan salinan di cache
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, copy);
+        });
+        return response;
+      })
+      .catch(() => caches.match(event.request)) // offline → pakai cache
   );
 });
