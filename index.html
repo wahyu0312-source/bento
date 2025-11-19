@@ -76,29 +76,31 @@
     </header>
 
     <!-- Tabs -->
-    <div class="inline-flex rounded-2xl bg-sky-50/70 border border-sky-100 p-1 mb-5 sm:mb-6">
-      <button
-        id="tab-order"
-        type="button"
-        class="px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm rounded-xl bg-white text-sky-900 border border-sky-300 shadow-sm"
-      >
-        注文フォーム
-      </button>
-      <button
-        id="tab-dashboard"
-        type="button"
-        class="px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm rounded-xl text-slate-500 hover:text-sky-800"
-      >
-        ダッシュボード
-      </button>
-      <button
-        id="tab-menu"
-        type="button"
-        class="px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm rounded-xl text-slate-500 hover:text-sky-800"
-      >
-        メニューカレンダー
-      </button>
-    </div>
+  <div class="inline-flex rounded-2xl bg-sky-50/70 border border-sky-100 p-1 mb-5 sm:mb-6">
+  <button
+    id="tab-order"
+    type="button"
+    class="px-3 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm rounded-xl bg-white text-sky-900 border border-sky-300 shadow-sm"
+  >
+    注文フォーム
+  </button>
+  <button
+    id="tab-dashboard"
+    type="button"
+    class="px-3 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm rounded-xl text-slate-500 hover:text-sky-800"
+  >
+    ダッシュボード
+  </button>
+  <!-- ⬇️ ganti id dari tab-menu → tab-calendar -->
+  <button
+    id="tab-calendar"
+    type="button"
+    class="px-3 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm rounded-xl text-slate-500 hover:text-sky-800"
+  >
+    メニューカレンダー
+  </button>
+</div>
+
 
     <!-- ====== ORDER SECTION ====== -->
     <section id="order-section" class="space-y-5 sm:space-y-6">
@@ -516,32 +518,29 @@
     </section>
 
     <!-- ====== MENU CALENDAR SECTION ====== -->
-    <section id="menu-calendar-section" class="space-y-5 sm:space-y-6 hidden">
-      <div class="rounded-3xl bg-white/90 border border-sky-100 shadow-sm p-5 sm:p-6 space-y-4">
-        <div class="flex items-center justify-between gap-4 flex-wrap">
-          <div>
-            <h2 class="text-sm sm:text-base font-semibold text-sky-900">メニューカレンダー</h2>
-            <p class="text-[11px] text-slate-500 mt-1">
-              1ヶ月分のメニューをカレンダー形式で表示します。
-            </p>
-          </div>
-          <div>
-            <label for="calendar-month" class="block text-[11px] sm:text-xs text-slate-600 mb-1">
-              対象月
-            </label>
-            <input
-              id="calendar-month"
-              type="month"
-              class="w-40 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-            />
-          </div>
-        </div>
-
-        <div id="calendar-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-[11px] sm:text-xs text-slate-700">
-          <!-- JS でメニューカレンダーを生成 -->
-        </div>
+   <!-- ====== MENU CALENDAR SECTION ====== -->
+<section id="calendar-section" class="space-y-5 sm:space-y-6 hidden">
+  <div class="rounded-3xl bg-white/90 border border-sky-100 shadow-sm p-5 sm:p-6 space-y-4">
+    <div class="flex items-center justify-between gap-4 flex-wrap">
+      <div>
+        <h2 class="text-sm sm:text-base font-semibold text-sky-900">メニューカレンダー</h2>
+        <p class="text-[11px] text-slate-500 mt-1">
+          1ヶ月分のメニューをカレンダー形式で表示します。
+        </p>
       </div>
-    </section>
+      <div>
+        <label for="calendar-month" class="block text-[11px] sm:text-xs text-slate-600 mb-1">
+          対象月
+        </label>
+        <input
+          id="calendar-month"
+          type="month"
+          class="w-40 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+        />
+      </div>
+    </div>
+    <!-- dst… -->
+
 
     <!-- Footer -->
     <footer class="mt-8 sm:mt-10 text-center text-[11px] text-slate-400 space-y-1">
