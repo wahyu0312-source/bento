@@ -1038,30 +1038,57 @@ if (btnLoadEmployeeSummary) {
 }
 
 if (btnDownloadEmpExcel) {
-  btnDownloadEmpExcel.addEventListener('click', () => {
-    if (!lastEmployeeSummary) {
-      alert('まず社員別サマリーを表示してください。');
+  btnDownloadEmpExcel.addEventListener('click', async () => {
+    const emp = summaryEmployeeSelect.value;
+    const m = summaryMonthInput.value;
+
+    if (!emp || !m) {
+      alert('社員名と対象月を選択してください。');
       return;
     }
-    const s = lastEmployeeSummary;
-    const rows = [];
-    rows.push(['社員名', s.employee || '']);
-    rows.push(['対象月', s.month || '']);
-    rows.push([]);
-    rows.push(['日付', 'ステータス', '単価', '小計']);
-    (s.orders || []).forEach(o => {
-      rows.push([o.date, o.status, o.unitPrice || 0, o.subTotal || 0]);
-    });
-    rows.push([]);
-    rows.push(['注文数合計', s.totalCount || 0]);
-    rows.push(['金額合計', s.totalAmount || 0]);
 
-    downloadCsv(
-      `employee-summary-${s.employee || 'unknown'}-${s.month || ''}.csv`,
-      rows,
-    );
+    try {
+      // Pakai cache kalau ada dan cocok, kalau tidak fetch lagi
+      let s = lastEmployeeSummary;
+      if (!s || s.employee !== emp || s.month !== m) {
+        s = await apiGet({
+          action: 'getEmployeeSummary',
+          employee: emp,
+          month: m,
+        });
+        lastEmployeeSummary = s;
+      }
+
+      const rows = [];
+      rows.push(['社員名', s.employee || '']);
+      rows.push(['対象月', s.month || '']);
+      rows.push([]);
+      rows.push(['日付', 'ステータス', '単価', '小計']);
+
+      (s.orders || []).forEach(o => {
+        rows.push([
+          o.date,
+          o.status || '',
+          o.unitPrice || 0,
+          o.subTotal || 0,
+        ]);
+      });
+
+      rows.push([]);
+      rows.push(['注文数合計', s.totalCount || 0]);
+      rows.push(['金額合計', s.totalAmount || 0]);
+
+      downloadCsv(
+        `employee-summary-${s.employee || 'unknown'}-${s.month || ''}.csv`,
+        rows,
+      );
+    } catch (err) {
+      console.error(err);
+      alert('社員別サマリーの取得に失敗しました。');
+    }
   });
 }
+
 
 if (btnDownloadEmpPdf) {
   btnDownloadEmpPdf.addEventListener('click', async () => {
@@ -1078,10 +1105,15 @@ if (btnDownloadEmpPdf) {
         month: m,
       });
       if (res && res.pdfUrl) {
-        window.open(res.pdfUrl, '_blank');
-      } else {
-        alert('PDFの作成に失敗しました。');
-      }
+  window.open(res.pdfUrl, '_blank');
+} else {
+  const msg =
+    res && res.error
+      ? `PDFの作成に失敗しました（${res.error}）。`
+      : 'PDFの作成に失敗しました。';
+  alert(msg);
+}
+
     } catch (err) {
       console.error(err);
       alert('PDFの作成中にエラーが発生しました。');
