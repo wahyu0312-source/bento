@@ -1,7 +1,7 @@
 // sw.js
 
 // GANTI versi kalau rilis baru
-const CACHE_NAME = 'tsh-bento-v4';
+const CACHE_NAME = 'tsh-bento-v5';
 
 const CORE_ASSETS = [
   './',
@@ -38,13 +38,12 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        // simpan salinan di cache
         const copy = response.clone();
         caches.open(CACHE_NAME).then(cache => {
           cache.put(event.request, copy);
         });
         return response;
       })
-      .catch(() => caches.match(event.request)) // offline → pakai cache
+      .catch(() => caches.match(event.request))
   );
 });
