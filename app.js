@@ -81,7 +81,14 @@ function toCsv(rows) {
 
 function downloadCsv(filename, rows) {
   const csvContent = toCsv(rows);
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+  // Tambah BOM supaya Excel ngerti ini UTF-8
+  const bom = '\uFEFF';
+
+  const blob = new Blob([bom + csvContent], {
+    type: 'text/csv;charset=utf-8;',
+  });
+
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -91,6 +98,7 @@ function downloadCsv(filename, rows) {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
 
 // ====== API helpers ======
 async function apiGet(params) {
