@@ -546,6 +546,7 @@ if (orderForm) {
     const dateStr = orderDateInput.value;
     const employeeName = employeeSelect.value;
     const status = document.querySelector('input[name="order-status"]:checked')?.value;
+const mealTime = document.querySelector('input[name="meal-time"]:checked')?.value || 'pagi';
 
     if (!dateStr || !employeeName) {
       formMessage.textContent = '日付と社員名を入力してください。';
@@ -553,12 +554,14 @@ if (orderForm) {
     }
 
     try {
-      const res = await apiPost({
-        action: 'saveOrder',
-        date: dateStr,
-        employeeName,
-        status,
-      });
+     const res = await apiPost({
+  action: 'saveOrder',
+  date: dateStr,
+  employeeName,
+  status,
+  mealTime, // ← ditambahkan
+});
+
 
       if (res && res.success) {
         formMessage.textContent = '保存しました。';
