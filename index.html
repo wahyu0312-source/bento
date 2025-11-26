@@ -13,6 +13,21 @@
   <link rel="icon" type="image/png" href="./tsh.png" />
   <link rel="apple-touch-icon" href="./icon-192.png" />
   <link rel="manifest" href="./manifest.json" />
+<style>
+  /* Animasi background ilustrasi makanan */
+  .bg-food-animated {
+    background-image: url('./images/food-animation-bg.gif'); /* Tambahkan GIF loop ringan */
+    background-repeat: repeat;
+    background-size: cover;
+    animation: bgScroll 60s linear infinite;
+    z-index: -10;
+  }
+
+  @keyframes bgScroll {
+    0% { background-position: 0 0; }
+    100% { background-position: 100% 100%; }
+  }
+</style>
 
   <style>
     /* text berjalan */
@@ -32,6 +47,9 @@
 </head>
 
 <body class="min-h-screen bg-gradient-to-b from-sky-50 to-orange-50/40">
+  <!-- Background animasi -->
+<div class="fixed inset-0 bg-food-animated opacity-10 pointer-events-none"></div>
+
   <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
     <!-- Header -->
     <header class="flex items-center justify-between gap-4 mb-6 sm:mb-8">
@@ -289,6 +307,39 @@
               id="btn-generate-multi-days"
               class="mt-5 px-3 py-1.5 rounded-xl bg-sky-500 text-xs sm:text-sm text-white font-semibold hover:bg-sky-600"
             >
+            <!-- Waktu Makan -->
+<div class="space-y-1">
+  <label class="block text-xs sm:text-sm text-slate-600">
+    時間帯を選択（Pilih waktu makan）
+  </label>
+  <div class="grid grid-cols-3 gap-2 text-sm">
+    <label class="block cursor-pointer">
+      <input type="radio" name="meal-time" value="pagi" class="peer sr-only" checked />
+      <div class="flex items-center justify-center gap-2 rounded-xl border px-3 py-2
+                  bg-yellow-50 border-yellow-200 text-yellow-700
+                  peer-checked:bg-yellow-400 peer-checked:text-white peer-checked:border-yellow-500">
+        🌅 Pagi
+      </div>
+    </label>
+    <label class="block cursor-pointer">
+      <input type="radio" name="meal-time" value="siang" class="peer sr-only" />
+      <div class="flex items-center justify-center gap-2 rounded-xl border px-3 py-2
+                  bg-orange-50 border-orange-200 text-orange-700
+                  peer-checked:bg-orange-500 peer-checked:text-white peer-checked:border-orange-600">
+        🌞 Siang
+      </div>
+    </label>
+    <label class="block cursor-pointer">
+      <input type="radio" name="meal-time" value="malam" class="peer sr-only" />
+      <div class="flex items-center justify-center gap-2 rounded-xl border px-3 py-2
+                  bg-slate-50 border-slate-200 text-slate-700
+                  peer-checked:bg-slate-600 peer-checked:text-white peer-checked:border-slate-700">
+        🌙 Malam
+      </div>
+    </label>
+  </div>
+</div>
+
               日付一覧を表示
             </button>
           </div>
