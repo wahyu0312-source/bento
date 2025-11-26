@@ -546,7 +546,6 @@ if (orderForm) {
     const dateStr = orderDateInput.value;
     const employeeName = employeeSelect.value;
     const status = document.querySelector('input[name="order-status"]:checked')?.value;
-const mealTime = document.querySelector('input[name="meal-time"]:checked')?.value || 'pagi';
 
     if (!dateStr || !employeeName) {
       formMessage.textContent = '日付と社員名を入力してください。';
@@ -554,14 +553,12 @@ const mealTime = document.querySelector('input[name="meal-time"]:checked')?.valu
     }
 
     try {
-     const res = await apiPost({
-  action: 'saveOrder',
-  date: dateStr,
-  employeeName,
-  status,
-  mealTime, // ← ditambahkan
-});
-
+      const res = await apiPost({
+        action: 'saveOrder',
+        date: dateStr,
+        employeeName,
+        status,
+      });
 
       if (res && res.success) {
         formMessage.textContent = '保存しました。';
@@ -945,11 +942,13 @@ if (btnSubmitMulti) {
       await Promise.all(
         selected.map(dateStr =>
           apiPost({
-            action: 'saveOrder',
-            date: dateStr,
-            employeeName,
-            status,
-          }),
+  action: 'saveOrder',
+  date: dateStr,
+  employeeName,
+  status,
+  menuType
+}),
+
         ),
       );
 
@@ -967,6 +966,8 @@ if (btnSubmitMulti) {
       formMessage.textContent = '一括登録中にエラーが発生しました。';
     }
   });
+  const menuType = document.querySelector('input[name="menu-type-multi"]:checked')?.value || '通常メニュー';
+
 }
 
 // ====== 社員別サマリー ======
