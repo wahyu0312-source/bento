@@ -542,7 +542,10 @@ if (multiModeToggle && multiPanel) {
 
 if (btnGenerateMultiDays && multiMonthInput && multiDaysContainer) {
   btnGenerateMultiDays.addEventListener('click', () => {
+    console.log('Generate multi-days clicked');
     const monthVal = multiMonthInput.value;
+    console.log('Month value:', monthVal);
+    
     if (!monthVal) {
       alert('対象月を選択してください。');
       return;
@@ -551,6 +554,8 @@ if (btnGenerateMultiDays && multiMonthInput && multiDaysContainer) {
     const [year, month] = monthVal.split('-').map(Number);
     const daysInMonth = new Date(year, month, 0).getDate();
     const minDate = getMinimumOrderDate();
+    
+    console.log('Year:', year, 'Month:', month, 'Days:', daysInMonth, 'Min Date:', minDate);
 
     const checkboxes = [];
     for (let d = 1; d <= daysInMonth; d++) {
@@ -578,12 +583,14 @@ if (btnGenerateMultiDays && multiMonthInput && multiDaysContainer) {
 
     if (checkboxes.length === 0) {
       multiDaysContainer.innerHTML = '<p class="text-slate-500 text-sm">選択可能な日付がありません。</p>';
+      console.log('No valid dates found');
     } else {
       multiDaysContainer.innerHTML = `
         <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-2">
           ${checkboxes.join('')}
         </div>
       `;
+      console.log('Generated', checkboxes.length, 'date checkboxes');
     }
   });
 }
