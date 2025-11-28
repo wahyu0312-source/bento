@@ -252,6 +252,7 @@ const calendarGrid = document.getElementById('calendar-grid');
 // today orders
 const btnRefreshTodayOrders = document.getElementById('btn-refresh-today-orders');
 const todayOrdersBody = document.getElementById('today-orders-body');
+const btnDownloadTodayOrders = document.getElementById('btn-download-today-orders');
 
 // menu PDF
 const menuUrlInput = document.getElementById('menu-url-input');
@@ -1091,6 +1092,36 @@ window.deleteTodayOrder = async function(employee, date) {
 
 if (btnRefreshTodayOrders) {
   btnRefreshTodayOrders.addEventListener('click', loadTodayOrders);
+}
+
+if (btnDownloadTodayOrders) {
+  btnDownloadTodayOrders.addEventListener('click', async () => {
+    const today = todayStr();
+
+    try {
+      const data = await apiGet({ action: 'getDaySummary', date: today });
+      if (data.error || !data.orders || data.orders.length === 0) {
+        alert('本日のデータがありません。');
+        return;
+      }
+
+      const rows = [['日付', '社員名', 'メニュー種類', 'お届け場所', '金額']];
+      data.orders.forEach(o => {
+        rows.push([
+          o.date,
+          o.employee,
+          o.menuType || '-',
+          o.deliveryLocation || '-',
+          o.price || 0,
+        ]);
+      });
+
+      downloadCsv(`本日注文_${today}.csv`, rows);
+    } catch (err) {
+      console.error('today orders download error:', err);
+      alert('ダウンロードエラー');
+    }
+  });
 }
 
 // ====== Menu PDF Display ======
