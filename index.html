@@ -5,21 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TSH 弁当注文</title>
   <meta name="description" content="社員向け日替わり弁当の注文システム" />
+<style>
+  .bg-food-animated {
+    background-image: url('./images/food-bg-animated.gif');
+    background-repeat: repeat;
+    background-size: 400px auto;
+    animation: scrollBG 80s linear infinite;
+    z-index: -10;
+  }
+
+  @keyframes scrollBG {
+    0% { background-position: 0 0; }
+    100% { background-position: 100% 100%; }
+  }
+  
+  /* Font Size Control */
+  .font-size-small { font-size: 0.875rem; }
+  .font-size-medium { font-size: 1rem; }
+  .font-size-large { font-size: 1.125rem; }
+  .font-size-xlarge { font-size: 1.25rem; }
+</style>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- PWA / Icons -->
+  <link rel="icon" type="image/png" href="./tsh.png" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <link rel="manifest" href="./manifest.json" />
 
   <style>
-    .bg-food-animated {
-      background-image: url('./images/food-bg-animated.gif');
-      background-repeat: repeat;
-      background-size: 400px auto;
-      animation: scrollBG 80s linear infinite;
-      z-index: -10;
-    }
-
-    @keyframes scrollBG {
-      0% { background-position: 0 0; }
-      100% { background-position: 100% 100%; }
-    }
-
     /* text berjalan */
     .marquee {
       white-space: nowrap;
@@ -34,21 +49,13 @@
       100% { transform: translateX(-100%); }
     }
   </style>
-
-  <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- PWA / Icons -->
-  <link rel="icon" type="image/png" href="./tsh.png" />
-  <link rel="apple-touch-icon" href="./icon-192.png" />
-  <link rel="manifest" href="./manifest.json" />
 </head>
 
-<body class="min-h-screen bg-gradient-to-b from-sky-50 to-orange-50/40">
+<body class="min-h-screen bg-gradient-to-b from-sky-50 to-orange-50/40 font-size-medium" id="app-body">
   <!-- Background animasi makanan -->
-  <div class="fixed inset-0 bg-food-animated opacity-10 pointer-events-none"></div>
+<div class="fixed inset-0 bg-food-animated opacity-10 pointer-events-none"></div>
 
-  <div id="app-root" class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
     <!-- Header -->
     <header class="flex items-center justify-between gap-4 mb-6 sm:mb-8">
       <div class="flex items-center gap-3">
@@ -66,6 +73,14 @@
       </div>
 
       <div class="flex flex-col items-end gap-1 text-[11px] sm:text-xs">
+        <!-- Font Size Control -->
+        <div class="flex gap-1 mb-2">
+          <button onclick="setFontSize('small')" class="px-2 py-1 rounded bg-sky-100 text-sky-700 text-xs hover:bg-sky-200">小</button>
+          <button onclick="setFontSize('medium')" class="px-2 py-1 rounded bg-sky-100 text-sky-700 text-xs hover:bg-sky-200">中</button>
+          <button onclick="setFontSize('large')" class="px-2 py-1 rounded bg-sky-100 text-sky-700 text-xs hover:bg-sky-200">大</button>
+          <button onclick="setFontSize('xlarge')" class="px-2 py-1 rounded bg-sky-100 text-sky-700 text-xs hover:bg-sky-200">特大</button>
+        </div>
+        
         <div class="flex flex-wrap justify-end gap-1.5">
           <span class="px-3 py-1 rounded-full bg-sky-50 text-sky-600 border border-sky-100">
             モバイル最適化
@@ -75,80 +90,60 @@
           </span>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2 text-[11px] sm:text-xs text-slate-500">
+        <div class="flex items-center gap-2 text-[11px] sm:text-xs text-slate-500">
           <span id="today-header-text" class="font-medium text-sky-900">
-            本日 -
+            本日 - 
           </span>
           <span class="h-3 w-px bg-slate-300 hidden sm:inline-block"></span>
           <span id="weather-header-text" class="flex items-center gap-1 text-slate-500">
             天気取得中…
           </span>
-          <span class="h-3 w-px bg-slate-300 hidden sm:inline-block"></span>
-          <span id="today-order-status" class="inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] bg-slate-50 text-slate-600 border-slate-200">
-            本日の注文：未選択
-          </span>
         </div>
 
-        <div class="flex items-center gap-2 mt-1">
-          <span class="text-[10px] sm:text-[11px] text-slate-400">
-            ＠生産技術
-          </span>
-          <!-- Kontrol ukuran font -->
-          <div class="inline-flex items-center gap-0.5 rounded-full bg-white/70 border border-sky-100 px-1 py-0.5">
-            <button id="btn-font-small"
-              class="px-1.5 text-[10px] rounded-full border border-transparent hover:border-sky-300">
-              A-
-            </button>
-            <button id="btn-font-medium"
-              class="px-1.5 text-[11px] rounded-full border border-sky-300 bg-sky-50">
-              A
-            </button>
-            <button id="btn-font-large"
-              class="px-1.5 text-[12px] rounded-full border border-transparent hover:border-sky-300">
-              A+
-            </button>
-          </div>
-        </div>
+        <span class="text-slate-400 text-[10px] sm:text-[11px]">
+          ＠生産技術
+        </span>
       </div>
     </header>
 
     <!-- Tabs -->
-    <div class="inline-flex flex-wrap rounded-2xl bg-sky-50/70 border border-sky-100 p-1 mb-5 sm:mb-6 gap-1">
+    <div class="inline-flex rounded-2xl bg-sky-50/70 border border-sky-100 p-1 mb-5 sm:mb-6">
       <button
         id="tab-order"
         type="button"
-        class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-xl bg-white text-sky-900 border border-sky-300 shadow-sm"
+        class="px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm rounded-xl bg-white text-sky-900 border border-sky-300 shadow-sm"
       >
         注文フォーム
       </button>
       <button
-        id="tab-today-list"
-        type="button"
-        class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-xl text-slate-500 hover:text-sky-800"
-      >
-        本日注文者一覧
-      </button>
-      <button
         id="tab-dashboard"
         type="button"
-        class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-xl text-slate-500 hover:text-sky-800"
+        class="px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm rounded-xl text-slate-500 hover:text-sky-800"
       >
         ダッシュボード
       </button>
       <button
-        id="tab-calendar"
+        id="tab-today-orders"
         type="button"
-        class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-xl text-slate-500 hover:text-sky-800"
+        class="px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm rounded-xl text-slate-500 hover:text-sky-800"
       >
-        メニューカレンダー
+        本日注文者一覧
       </button>
-      <button
-        id="tab-menu-pdf"
-        type="button"
-        class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-xl text-slate-500 hover:text-sky-800"
-      >
-        メニューPDF
-      </button>
+     <button
+  id="tab-calendar"
+  type="button"
+  class="px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm rounded-xl text-slate-500 hover:text-sky-800"
+>
+  メニューカレンダー
+</button>
+<button
+  id="tab-menu-pdf"
+  type="button"
+  class="px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm rounded-xl text-slate-500 hover:text-sky-800"
+>
+  メニュー表示
+</button>
+
     </div>
 
     <!-- ====== ORDER SECTION ====== -->
@@ -185,7 +180,7 @@
               </p>
             </div>
             <div class="ml-auto hidden sm:block text-[11px] text-slate-400">
-              締切：当日 09:00 まで（それ以降は翌日以降のみ）
+              締切：当日 09:00 まで
             </div>
           </div>
 
@@ -231,126 +226,61 @@
               </p>
             </div>
 
-            <!-- お届け場所 -->
-            <div class="space-y-1">
-              <label class="block text-xs sm:text-sm text-slate-600">
-                お届け場所
-              </label>
-              <select
-                id="delivery-place"
-                class="w-full rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-              >
-                <option value="">選択してください</option>
-                <option value="本社C棟">本社C棟</option>
-                <option value="本社A棟">本社A棟</option>
-                <option value="駒岡工場">駒岡工場</option>
-              </select>
-              <p class="text-[11px] text-slate-500 mt-1">
-                ※ お届け場所を必ず選択してください。
-              </p>
-            </div>
+<!-- Pilihan Jenis Menu -->
+<div class="space-y-1">
+  <label class="block text-xs sm:text-sm text-slate-600">
+    メニューの種類を選択
+  </label>
+  <div class="grid grid-cols-4 gap-2 text-sm">
+    <label class="block cursor-pointer">
+      <input type="radio" name="menu-type" value="通常メニュー" class="peer sr-only" checked />
+      <div class="flex items-center justify-center gap-1 rounded-xl border px-3 py-2
+                  bg-green-50 border-green-200 text-green-700
+                  peer-checked:bg-green-500 peer-checked:text-white peer-checked:border-green-600">
+        通常
+      </div>
+    </label>
+    <label class="block cursor-pointer">
+      <input type="radio" name="menu-type" value="豚抜き" class="peer sr-only" />
+      <div class="flex items-center justify-center gap-1 rounded-xl border px-3 py-2
+                  bg-yellow-50 border-yellow-200 text-yellow-700
+                  peer-checked:bg-yellow-500 peer-checked:text-white peer-checked:border-yellow-600">
+        豚抜き
+      </div>
+    </label>
+    <label class="block cursor-pointer">
+      <input type="radio" name="menu-type" value="おかずのみ" class="peer sr-only" />
+      <div class="flex items-center justify-center gap-1 rounded-xl border px-3 py-2
+                  bg-orange-50 border-orange-200 text-orange-700
+                  peer-checked:bg-orange-500 peer-checked:text-white peer-checked:border-orange-600">
+        おかずのみ
+      </div>
+    </label>
+    <label class="block cursor-pointer">
+      <input type="radio" name="menu-type" value="ご飯のみ" class="peer sr-only" />
+      <div class="flex items-center justify-center gap-1 rounded-xl border px-3 py-2
+                  bg-blue-50 border-blue-200 text-blue-700
+                  peer-checked:bg-blue-500 peer-checked:text-white peer-checked:border-blue-600">
+        ご飯のみ
+      </div>
+    </label>
+  </div>
+</div>
 
-            <!-- Pilihan Jenis Menu -->
-            <div class="space-y-1">
-              <label class="block text-xs sm:text-sm text-slate-600">
-                メニューの種類を選択
-              </label>
-              <div class="grid grid-cols-4 gap-2 text-sm">
-                <label class="block cursor-pointer">
-                  <input type="radio" name="menu-type" value="通常メニュー" class="peer sr-only" checked />
-                  <div class="flex items-center justify-center gap-1 rounded-xl border px-3 py-2
-                              bg-green-50 border-green-200 text-green-700
-                              peer-checked:bg-green-500 peer-checked:text-white peer-checked:border-green-600">
-                    通常
-                  </div>
-                </label>
-                <label class="block cursor-pointer">
-                  <input type="radio" name="menu-type" value="豚抜き" class="peer sr-only" />
-                  <div class="flex items-center justify-center gap-1 rounded-xl border px-3 py-2
-                              bg-yellow-50 border-yellow-200 text-yellow-700
-                              peer-checked:bg-yellow-500 peer-checked:text-white peer-checked:border-yellow-600">
-                    豚抜き
-                  </div>
-                </label>
-                <label class="block cursor-pointer">
-                  <input type="radio" name="menu-type" value="おかずのみ" class="peer sr-only" />
-                  <div class="flex items-center justify-center gap-1 rounded-xl border px-3 py-2
-                              bg-orange-50 border-orange-200 text-orange-700
-                              peer-checked:bg-orange-500 peer-checked:text-white peer-checked:border-orange-600">
-                    おかずのみ
-                  </div>
-                </label>
-                <label class="block cursor-pointer">
-                  <input type="radio" name="menu-type" value="ご飯のみ" class="peer sr-only" />
-                  <div class="flex items-center justify-center gap-1 rounded-xl border px-3 py-2
-                              bg-sky-50 border-sky-200 text-sky-700
-                              peer-checked:bg-sky-500 peer-checked:text-white peer-checked:border-sky-600">
-                    ご飯のみ
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            <!-- ラジオ: 注文する / 注文しない -->
-            <div class="space-y-1">
-              <label class="block text-xs sm:text-sm text-slate-600">
-                弁当を注文しますか？
-              </label>
-
-              <div class="grid grid-cols-2 gap-2 text-sm">
-                <!-- 注文する -->
-                <label class="block cursor-pointer">
-                  <input
-                    type="radio"
-                    name="order-status"
-                    value="order"
-                    class="peer sr-only"
-                    checked
-                  />
-                  <div
-                    class="flex items-center justify-center gap-2 rounded-xl border px-3 py-2
-                           bg-sky-50 border-sky-200 text-sky-700
-                           peer-checked:bg-sky-500 peer-checked:text-white peer-checked:border-sky-500"
-                  >
-                    <span
-                      class="inline-flex h-4 w-4 items-center justify-center rounded-full border border-current"
-                    >
-                      <span class="h-2.5 w-2.5 rounded-full bg-current"></span>
-                    </span>
-                    <span class="text-xs sm:text-sm">注文する</span>
-                  </div>
-                </label>
-
-                <!-- 注文しない -->
-                <label class="block cursor-pointer">
-                  <input
-                    type="radio"
-                    name="order-status"
-                    value="noOrder"
-                    class="peer sr-only"
-                  />
-                  <div
-                    class="flex items-center justify-center gap-2 rounded-xl border px-3 py-2
-                           bg-orange-50 border-orange-200 text-orange-700
-                           peer-checked:bg-orange-500 peer-checked:text-white peer-checked:border-orange-500"
-                  >
-                    <span
-                      class="inline-flex h-4 w-4 items-center justify-center rounded-full border border-current"
-                    >
-                      <span class="h-2.5 w-2.5 rounded-full bg-current"></span>
-                    </span>
-                    <span class="text-xs sm:text-sm">注文しない</span>
-                  </div>
-                </label>
-              </div>
-
-              <!-- text berjalan info -->
-              <div class="mt-2 text-[11px] sm:text-xs text-sky-700 bg-sky-50/70 rounded-xl px-3 py-1 overflow-hidden">
-                <div class="marquee">
-                  ※ 同じ日付・同じ社員名で再度「注文する / 注文しない」を送信すると上書きされます。当日の注文は 09:00 まで、それ以降は翌日以降のみ変更できます。
-                </div>
-              </div>
-            </div>
+<!-- お届け場所 -->
+<div class="space-y-1">
+  <label class="block text-xs sm:text-sm text-slate-600">
+    お届け場所
+  </label>
+  <select
+    id="delivery-location"
+    class="w-full rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+  >
+    <option value="本社C棟">本社C棟</option>
+    <option value="本社A棟">本社A棟</option>
+    <option value="駒岡工場">駒岡工場</option>
+  </select>
+</div>
 
             <!-- メッセージ + ボタン -->
             <div class="flex flex-col sm:flex-row sm:items-center gap-3 pt-2">
@@ -406,63 +336,61 @@
           <div id="multi-days-container" class="text-[11px] sm:text-xs text-slate-600">
             <!-- JS で日付チェックボックスを生成 -->
           </div>
+<!-- Pilihan Menu Bulanan -->
+<div class="space-y-1">
+  <label class="block text-xs sm:text-sm text-slate-600">
+    メニューの種類（まとめて登録用）
+  </label>
+  <div class="grid grid-cols-4 gap-2 text-sm">
+    <label class="block cursor-pointer">
+      <input type="radio" name="menu-type-multi" value="通常メニュー" class="peer sr-only" checked />
+      <div class="flex items-center justify-center gap-1 rounded-xl border px-3 py-2
+                  bg-green-50 border-green-200 text-green-700
+                  peer-checked:bg-green-500 peer-checked:text-white peer-checked:border-green-600">
+        通常
+      </div>
+    </label>
+    <label class="block cursor-pointer">
+      <input type="radio" name="menu-type-multi" value="豚抜き" class="peer sr-only" />
+      <div class="flex items-center justify-center gap-1 rounded-xl border px-3 py-2
+                  bg-yellow-50 border-yellow-200 text-yellow-700
+                  peer-checked:bg-yellow-500 peer-checked:text-white peer-checked:border-yellow-600">
+        豚抜き
+      </div>
+    </label>
+    <label class="block cursor-pointer">
+      <input type="radio" name="menu-type-multi" value="おかずのみ" class="peer sr-only" />
+      <div class="flex items-center justify-center gap-1 rounded-xl border px-3 py-2
+                  bg-orange-50 border-orange-200 text-orange-700
+                  peer-checked:bg-orange-500 peer-checked:text-white peer-checked:border-orange-600">
+        おかずのみ
+      </div>
+    </label>
+    <label class="block cursor-pointer">
+      <input type="radio" name="menu-type-multi" value="ご飯のみ" class="peer sr-only" />
+      <div class="flex items-center justify-center gap-1 rounded-xl border px-3 py-2
+                  bg-blue-50 border-blue-200 text-blue-700
+                  peer-checked:bg-blue-500 peer-checked:text-white peer-checked:border-blue-600">
+        ご飯のみ
+      </div>
+    </label>
+  </div>
+</div>
 
-          <!-- お届け場所（まとめて用） -->
-          <div class="space-y-1 pt-1">
-            <label class="block text-xs sm:text-sm text-slate-600">
-              お届け場所（まとめて登録用）
-            </label>
-            <select
-              id="delivery-place-multi"
-              class="w-full rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-            >
-              <option value="">選択してください</option>
-              <option value="本社C棟">本社C棟</option>
-              <option value="本社A棟">本社A棟</option>
-              <option value="駒岡工場">駒岡工場</option>
-            </select>
-          </div>
-
-          <!-- Pilihan Menu Bulanan -->
-          <div class="space-y-1">
-            <label class="block text-xs sm:text-sm text-slate-600">
-              メニューの種類（まとめて登録用）
-            </label>
-            <div class="grid grid-cols-4 gap-2 text-sm">
-              <label class="block cursor-pointer">
-                <input type="radio" name="menu-type-multi" value="通常メニュー" class="peer sr-only" checked />
-                <div class="flex items-center justify-center gap-1 rounded-xl border px-3 py-2
-                            bg-green-50 border-green-200 text-green-700
-                            peer-checked:bg-green-500 peer-checked:text-white peer-checked:border-green-600">
-                  通常
-                </div>
-              </label>
-              <label class="block cursor-pointer">
-                <input type="radio" name="menu-type-multi" value="豚抜き" class="peer sr-only" />
-                <div class="flex items-center justify-center gap-1 rounded-xl border px-3 py-2
-                            bg-yellow-50 border-yellow-200 text-yellow-700
-                            peer-checked:bg-yellow-500 peer-checked:text-white peer-checked:border-yellow-600">
-                  豚抜き
-                </div>
-              </label>
-              <label class="block cursor-pointer">
-                <input type="radio" name="menu-type-multi" value="おかずのみ" class="peer sr-only" />
-                <div class="flex items-center justify-center gap-1 rounded-xl border px-3 py-2
-                            bg-orange-50 border-orange-200 text-orange-700
-                            peer-checked:bg-orange-500 peer-checked:text-white peer-checked:border-orange-600">
-                  おかずのみ
-                </div>
-              </label>
-              <label class="block cursor-pointer">
-                <input type="radio" name="menu-type-multi" value="ご飯のみ" class="peer sr-only" />
-                <div class="flex items-center justify-center gap-1 rounded-xl border px-3 py-2
-                            bg-sky-50 border-sky-200 text-sky-700
-                            peer-checked:bg-sky-500 peer-checked:text-white peer-checked:border-sky-600">
-                  ご飯のみ
-                </div>
-              </label>
-            </div>
-          </div>
+<!-- お届け場所（まとめて登録用） -->
+<div class="space-y-1">
+  <label class="block text-xs sm:text-sm text-slate-600">
+    お届け場所（まとめて登録用）
+  </label>
+  <select
+    id="delivery-location-multi"
+    class="w-full rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+  >
+    <option value="本社C棟">本社C棟</option>
+    <option value="本社A棟">本社A棟</option>
+    <option value="駒岡工場">駒岡工場</option>
+  </select>
+</div>
 
           <div class="pt-2 flex justify-end">
             <button
@@ -474,59 +402,45 @@
           </div>
 
           <p class="mt-2 text-[11px] text-slate-400">
-            ※ 社員名と「注文する／注文しない」を選択してからご利用ください。
+            ※ 社員名とメニューを選択してからご利用ください。
           </p>
         </div>
       </section>
     </section>
 
-    <!-- ====== TODAY LIST SECTION ====== -->
-    <section id="today-list-section" class="space-y-4 sm:space-y-5 hidden">
-      <div class="rounded-3xl bg-white/90 border border-sky-100 shadow-sm p-5 sm:p-6 space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-3">
+    <!-- ====== TODAY ORDERS SECTION ====== -->
+    <section id="today-orders-section" class="space-y-5 sm:space-y-6 hidden">
+      <div class="rounded-3xl bg-white/90 border border-sky-100 shadow-sm p-5 sm:p-6">
+        <div class="flex items-center justify-between gap-4 mb-4">
           <div>
-            <h2 class="text-sm sm:text-base font-semibold text-sky-900">
-              本日注文者一覧
-            </h2>
-            <p class="text-[11px] text-slate-500 mt-0.5">
-              本日の注文内容を一覧表示し、編集・削除できます。
+            <h2 class="text-sm sm:text-base font-semibold text-sky-900">本日注文者一覧</h2>
+            <p class="text-[11px] text-slate-500 mt-1">
+              本日の注文を確認・編集・削除できます。
             </p>
           </div>
-          <div class="flex items-center gap-2">
-            <div>
-              <label for="today-list-date" class="block text-[11px] sm:text-xs text-slate-600 mb-1">
-                対象日
-              </label>
-              <input
-                id="today-list-date"
-                type="date"
-                class="w-40 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-              />
-            </div>
-          </div>
+          <button
+            id="btn-refresh-today-orders"
+            class="px-3 py-1.5 rounded-xl bg-sky-500 text-xs sm:text-sm text-white font-semibold hover:bg-sky-600"
+          >
+            更新
+          </button>
         </div>
 
-        <div class="overflow-x-auto rounded-2xl border border-sky-100 bg-sky-50/40">
-          <table class="min-w-full text-[11px] sm:text-xs">
-            <thead class="bg-sky-100 text-slate-600">
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-xs">
+            <thead class="bg-sky-50 text-slate-600">
               <tr>
-                <th class="text-left px-2 py-1.5">社員名</th>
-                <th class="text-left px-2 py-1.5">ステータス</th>
-                <th class="text-left px-2 py-1.5">メニュー</th>
-                <th class="text-left px-2 py-1.5">お届け場所</th>
-                <th class="text-right px-2 py-1.5">小計</th>
-                <th class="text-center px-2 py-1.5">操作</th>
+                <th class="text-left px-3 py-2">社員名</th>
+                <th class="text-left px-3 py-2">メニュー種類</th>
+                <th class="text-left px-3 py-2">お届け場所</th>
+                <th class="text-right px-3 py-2">操作</th>
               </tr>
             </thead>
-            <tbody id="today-list-body" class="text-slate-700">
-              <!-- JS render -->
+            <tbody id="today-orders-body" class="text-slate-700 text-[11px] sm:text-xs">
+              <!-- JS で動的に生成 -->
             </tbody>
           </table>
         </div>
-
-        <p class="text-[10px] sm:text-[11px] text-slate-400">
-          ※ 当日の注文は 09:00 まで編集・削除可能です。それ以降は翌日以降の注文のみ変更できます。
-        </p>
       </div>
     </section>
 
@@ -570,17 +484,11 @@
               class="w-full rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
             />
           </div>
-          <div class="flex items-end justify-between">
+          <div class="flex items-end">
             <div class="text-[11px] text-slate-500 leading-relaxed">
               日次: <span id="dashboard-date-label"></span><br />
               月次: <span id="dashboard-month-label"></span>
             </div>
-            <span
-              id="dashboard-fresh-badge"
-              class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200"
-            >
-              最新
-            </span>
           </div>
         </div>
 
@@ -620,7 +528,7 @@
               <thead class="bg-sky-50 text-slate-600">
                 <tr>
                   <th class="text-left px-2 py-1">社員名</th>
-                  <th class="text-left px-2 py-1">ステータス</th>
+                  <th class="text-left px-2 py-1">メニュー</th>
                   <th class="text-left px-2 py-1">お届け場所</th>
                   <th class="text-right px-2 py-1">小計</th>
                 </tr>
@@ -741,72 +649,76 @@
     </section>
 
     <!-- ====== MENU CALENDAR SECTION ====== -->
-    <section id="calendar-section" class="space-y-5 sm:space-y-6 hidden">
-      <div class="rounded-3xl bg-white/90 border border-sky-100 shadow-sm p-5 sm:p-6 space-y-4">
-        <div class="flex items-center justify-between gap-4 flex-wrap">
-          <div>
-            <h2 class="text-sm sm:text-base font-semibold text-sky-900">メニューカレンダー</h2>
-            <p class="text-[11px] text-slate-500 mt-1">
-              1ヶ月分のメニューをカレンダー形式で表示します。
-            </p>
-          </div>
-          <div>
-            <label for="calendar-month" class="block text-[11px] sm:text-xs text-slate-600 mb-1">
-              対象月
-            </label>
-            <input
-              id="calendar-month"
-              type="month"
-              class="w-40 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-            />
-          </div>
-        </div>
+   <section id="calendar-section" class="space-y-5 sm:space-y-6 hidden">
+  <div class="rounded-3xl bg-white/90 border border-sky-100 shadow-sm p-5 sm:p-6 space-y-4">
+    <div class="flex items-center justify-between gap-4 flex-wrap">
+      <div>
+        <h2 class="text-sm sm:text-base font-semibold text-sky-900">メニューカレンダー</h2>
+        <p class="text-[11px] text-slate-500 mt-1">
+          1ヶ月分のメニューをカレンダー形式で表示します。
+        </p>
+      </div>
+      <div>
+        <label for="calendar-month" class="block text-[11px] sm:text-xs text-slate-600 mb-1">
+          対象月
+        </label>
+        <input
+          id="calendar-month"
+          type="month"
+          class="w-40 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+        />
+      </div>
+    </div>
 
-        <div
-          id="calendar-grid"
-          class="overflow-x-auto text-[11px] sm:text-xs text-slate-700"
+    <div
+      id="calendar-grid"
+      class="overflow-x-auto text-[11px] sm:text-xs text-slate-700"
+    >
+      <!-- JS でメニューカレンダーを生成 -->
+    </div>
+  </div>
+</section>
+
+<!-- ====== MENU PDF SECTION ====== -->
+<section id="menu-pdf-section" class="space-y-5 sm:space-y-6 hidden">
+  <div class="rounded-3xl bg-white/90 border border-sky-100 shadow-sm p-5 sm:p-6">
+    <div class="mb-4">
+      <h2 class="text-sm sm:text-base font-semibold text-sky-900">メニュー表示</h2>
+      <p class="text-[11px] text-slate-500 mt-1">
+        弁当メニューのPDFまたは画像を表示します。
+      </p>
+    </div>
+
+    <!-- URL入力フォーム（管理者用） -->
+    <div class="mb-4 p-4 bg-amber-50 rounded-xl border border-amber-200">
+      <label for="menu-url-input" class="block text-xs font-semibold text-amber-900 mb-2">
+        管理者用：メニューURL設定
+      </label>
+      <div class="flex gap-2">
+        <input
+          id="menu-url-input"
+          type="text"
+          placeholder="PDFまたは画像のURLを入力"
+          class="flex-1 rounded-lg border border-amber-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+        />
+        <button
+          id="btn-save-menu-url"
+          class="px-4 py-2 rounded-lg bg-amber-500 text-white text-sm font-semibold hover:bg-amber-600"
         >
-          <!-- JS でメニューカレンダーを生成 -->
-        </div>
+          保存
+        </button>
       </div>
-    </section>
+      <p class="text-[10px] text-amber-700 mt-1">
+        ※ Google DriveのファイルURLまたは画像URLを入力してください
+      </p>
+    </div>
 
-    <!-- ====== MENU PDF SECTION ====== -->
-    <section id="menu-pdf-section" class="space-y-4 sm:space-y-5 hidden">
-      <div class="rounded-3xl bg-white/90 border border-sky-100 shadow-sm p-5 sm:p-6 space-y-4">
-        <div class="flex items-center justify-between gap-4 flex-wrap">
-          <div>
-            <h2 class="text-sm sm:text-base font-semibold text-sky-900">メニューPDF</h2>
-            <p class="text-[11px] text-slate-500 mt-1">
-              仕出し弁当屋さんからのメニューPDFまたはURLをここで確認できます。
-            </p>
-          </div>
-        </div>
-
-        <div id="menu-pdf-info" class="text-[11px] sm:text-xs text-slate-600">
-          管理者が PDF の URL を設定するとここに表示されます。
-        </div>
-
-        <div class="flex flex-wrap items-center gap-2 text-xs">
-          <a
-            id="menu-pdf-link"
-            href="#"
-            target="_blank"
-            class="hidden px-3 py-1.5 rounded-xl bg-sky-500 text-white font-semibold hover:bg-sky-600"
-          >
-            メニューPDFを開く
-          </a>
-        </div>
-
-        <div class="mt-3 border border-sky-100 rounded-2xl overflow-hidden bg-slate-50/50">
-          <iframe
-            id="menu-pdf-frame"
-            src=""
-            class="w-full h-[420px] sm:h-[520px] hidden"
-          ></iframe>
-        </div>
-      </div>
-    </section>
+    <!-- メニュー表示エリア -->
+    <div id="menu-display-area" class="min-h-[400px] bg-slate-50 rounded-xl p-4 flex items-center justify-center">
+      <p class="text-sm text-slate-400">メニューURLを設定してください</p>
+    </div>
+  </div>
+</section>
 
     <!-- Footer -->
     <footer class="mt-8 sm:mt-10 text-center text-[11px] text-slate-400 space-y-1">
@@ -816,7 +728,7 @@
       </div>
       <div>Design by wahyu</div>
       <div class="text-[10px] text-slate-300">
-        Version: 2.0.0
+        Version: 2.0.0 - 改良版
       </div>
     </footer>
   </div>
