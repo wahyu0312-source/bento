@@ -408,7 +408,7 @@
       </section>
     </section>
 
-    <!-- ====== TODAY ORDERS SECTION ====== -->
+   <!-- ====== TODAY ORDERS SECTION ====== -->
     <section id="today-orders-section" class="space-y-5 sm:space-y-6 hidden">
       <div class="rounded-3xl bg-white/90 border border-sky-100 shadow-sm p-5 sm:p-6">
         <div class="flex items-center justify-between gap-4 mb-4">
@@ -418,12 +418,20 @@
               本日の注文を確認・編集・削除できます。
             </p>
           </div>
-          <button
-            id="btn-refresh-today-orders"
-            class="px-3 py-1.5 rounded-xl bg-sky-500 text-xs sm:text-sm text-white font-semibold hover:bg-sky-600"
-          >
-            更新
-          </button>
+          <div class="flex items-center gap-2">
+            <button
+              id="btn-download-today-orders"
+              class="px-3 py-1.5 rounded-xl bg-emerald-500 text-xs sm:text-sm text-white font-semibold hover:bg-emerald-600"
+            >
+              Excelダウンロード
+            </button>
+            <button
+              id="btn-refresh-today-orders"
+              class="px-3 py-1.5 rounded-xl bg-sky-500 text-xs sm:text-sm text-white font-semibold hover:bg-sky-600"
+            >
+              更新
+            </button>
+          </div>
         </div>
 
         <div class="overflow-x-auto">
