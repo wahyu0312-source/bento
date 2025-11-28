@@ -564,11 +564,11 @@ if (btnGenerateMultiDays && multiMonthInput && multiDaysContainer) {
       const dateObj = new Date(dateStr);
       const dayOfWeek = dateObj.getDay();
       
-      // Skip weekends
-      if (dayOfWeek === 0 || dayOfWeek === 6) continue;
-      
-      // Skip dates before minimum order date
-      if (dateStr < minDate) continue;
+      // （必要なら）ここで週末も含めて表示する
+// 週末も注文可能にするため、土日をスキップしない
+
+// Skip dates before minimum order date（過去日は非表示）
+if (dateStr < minDate) continue;
 
       const w = weekdayJa[dayOfWeek] || '';
       const label = `${dateStr} (${w})`;
@@ -1153,8 +1153,9 @@ window.addEventListener('DOMContentLoaded', () => {
   if (todayHeaderText) todayHeaderText.textContent = formatTodayHeader(today);
 
   if (orderDateInput) {
-    orderDateInput.value = getMinimumOrderDate();
-    orderDateInput.min = getMinimumOrderDate();
+    const min = getMinimumOrderDate();
+    orderDateInput.value = min;
+    orderDateInput.min = min;
   }
 
   if (dashboardDateInput) dashboardDateInput.value = today;
@@ -1164,15 +1165,17 @@ window.addEventListener('DOMContentLoaded', () => {
 
   if (multiMonthInput) multiMonthInput.value = currentMonth;
   if (summaryMonthInput) summaryMonthInput.value = currentMonth;
-  if (calendarMonthInput) calendarMonthInput.value = currentMonth;
+  if (calendarMonthInput) {
+    calendarMonthInput.value = currentMonth;
+    // ← langsung load kalender untuk bulan sekarang
+    loadMenuCalendar();
+  }
 
   loadWeather();
   loadEmployees();
   loadTodayMenu();
   
-  // Show time restriction message
   showTimeRestrictionMessage();
-  
-  // Update time restriction message every minute
   setInterval(showTimeRestrictionMessage, 60000);
 });
+
